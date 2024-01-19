@@ -11,6 +11,7 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 4. Strike range selector to adjust the no. of strikes to be shown.
 5. Auto-update data at specific times at 3 minute intervals with the help of a web worker.
 6. Charts have tooltips.
+7. Local storage persistence of selected underlying.
 
 ## How to run it locally
 1. Clone the repository.
