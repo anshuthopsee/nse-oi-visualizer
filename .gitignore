@@ -1,0 +1,15 @@
+# .gitignore
+
+# Node.js
+node_modules/
+
+# Build artifacts
+build/
+dist/
+
+# Dependency directories
+/frontend/node_modules/
+/backend/node_modules/
+
+# Environment variables
+.env
