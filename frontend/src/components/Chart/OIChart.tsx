@@ -131,10 +131,6 @@ const OIChart = ({ data, spotPrice, type }: OIChartProps) => {
     setHoveredPutValue(null);
   };
 
-
-// useMemo here would be helpful
-// you can get the data for tooltips by inverting the scales
-
   const bars = useMemo(() => data.map((d, i) => {
     const hovered = hoveredGroupStrike === String(d.strikePrice);
 
