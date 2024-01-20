@@ -1,5 +1,5 @@
 ## NSE-OI-VISUALIZER
-A simple React application inspired by [Sensibull](https://www.sensibull.com/), which visualizes real-time Open Interest data of Indian Benchmark Indices and F&O stocks. Data is fetched from NSE API routed through a proxy server and plots the data as bar charts. The app shows Change in Open Interest and Total Open Interest for the selected instrument. The data is auto-updated at 3-minute intervals, precisely at times when the minutes are divisible by 3. Frontend is made with React, Material UI, Redux and D3. Backend is made with NodeJS. (Note: The app is work in progress).
+A simple React application inspired by [Sensibull](https://www.sensibull.com/), which visualizes real-time Open Interest data of Indian Benchmark Indices and F&O stocks. The app fetches data from NSE API routed through a proxy server and plots the data as bar charts. The app shows Change in Open Interest and Total Open Interest for the selected instrument. The data is auto-updated at 3-minute intervals, precisely at times when the minutes are divisible by 3. Frontend is made with React, Material UI, Redux and D3. Backend is made with NodeJS. (Note: The app is work in progress).
 
 ## Demo
 ![Usage Demo](frontend/demo/nse-oi-visualizer.gif)
