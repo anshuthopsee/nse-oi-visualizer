@@ -5,11 +5,11 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 ![Usage Demo](frontend/demo/nse-oi-visualizer-demo.gif)
 
 ## Features
-1. Real-time Open Interest data of Indian Benchmark Indices (NIFTY, BANKNIFTY, FINNIFTY, MIDCPNIFTY) and F&O stocks listed on NSE (185 stocks).
+1. Fetches Real-time Open Interest data of Indian Benchmark Indices (NIFTY, BANKNIFTY, FINNIFTY and MIDCPNIFTY) and F&O stocks listed on NSE (185 stocks).
 2. Shows Change in Open Interest and Total Open Interest.
-3. Show current and next expiry data.
-4. Strike range selector to adjust the no. of strikes to be shown.
-5. Auto-update data, using a web worker, precisely at times when the minutes are divisible by 3 (ex: 9:30, 9:33, 9:36,...,9:57, 10:00 etc).
+3. Shows current and next expiry data.
+4. Has a Strike range selector to adjust the no. of strikes to be shown.
+5. Auto-updates data, using a web worker, precisely at times when the minutes are divisible by 3 (ex: 9:30, 9:33, 9:36,...,9:57, 10:00 etc).
 6. Charts have tooltips.
 7. Local storage persistence of the selected underlying.
 
