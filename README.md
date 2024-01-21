@@ -16,7 +16,7 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 ## How to run it locally
 1. Clone the repository.
 2. cd into backend directory and run `npm install` to install dependencies.
-3. Run 'npm run dev' to start the proxy api.
+3. Run 'npm run dev' to start the proxy server.
 4. cd into frontend directory and run `npm install` to install dependencies.
 5. Run 'npm run dev' to start the frontend app.
 6. Open http://localhost:5173/ in your browser.
