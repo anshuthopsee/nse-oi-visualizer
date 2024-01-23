@@ -5,16 +5,16 @@ import UserAgent from 'user-agents';
 
 const baseURL = 'https://www.nseindia.com/';
 
-const userAgent = new UserAgent();
-
-const options = {
-  headers: {
-    "Accept": "*/*",
-    "Access-Control-Allow-Origin": "*",
-    "User-Agent": userAgent.toString(),
-    "Connection": "keep-alive",
-  },
-  timeout: 6000
+const getOptionsWithUserAgent = () => {
+  const userAgent = new UserAgent();
+  return {
+    headers: {
+      "Accept": "*/*",
+      "User-Agent": userAgent.toString(),
+      "Connection": "keep-alive",
+    },
+    timeout: 6000
+  };
 };
 
 const app = express();
@@ -24,6 +24,7 @@ const MAX_RETRY_COUNT = 3;
 const getOptionChainWithRetry = async (cookie, identifier, retryCount = 0) => {
   const isIndex = ["NIFTY", "BANKNIFTY", "FINNIFTY", "MIDCPNIFTY"].includes(identifier);
   const apiEndpoint = "api/option-chain-" + (isIndex ? "indices" : "equities");
+  const options = getOptionsWithUserAgent();
   try {
     const url = baseURL + apiEndpoint + "?symbol=" + encodeURIComponent(identifier);
     const response = await axios.get(url, { ...options, headers: { ...options.headers, Cookie: cookie } });
@@ -39,6 +40,7 @@ const getOptionChainWithRetry = async (cookie, identifier, retryCount = 0) => {
 };
 
 const getCookiesWithRetry = async () => {
+  const options = getOptionsWithUserAgent();
   try {
     const response = await axios.get(baseURL, options);
     const cookie = response.headers['set-cookie'];
