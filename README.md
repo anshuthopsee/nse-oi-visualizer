@@ -28,5 +28,5 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 3. Option Payoff visualization? Maybe.
 
 ## References
-1. https://www.sensibull.com/ tried to replicate the UI of this app.
-1. https://2019.wattenberger.com/blog/react-and-d3 this is an insightful blog on how to use D3 with React, while keeping things Reacty.
+1. Tried to replicate the UI of https://www.sensibull.com/ app.
+2. https://2019.wattenberger.com/blog/react-and-d3 this is an insightful blog on how to use D3 with React, while keeping things Reacty.
