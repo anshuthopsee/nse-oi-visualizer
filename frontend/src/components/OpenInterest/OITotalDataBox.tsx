@@ -16,7 +16,7 @@ const OIChangeDataBox = ({ totalCallOI, totalPutOI, pcr, underlyingPrice }: OITo
           <Box sx={{ height: "60px", width: "fit-content", display: "flex", flexDirection: "column", justifyContent: "center" }}>
             <Typography color="inherit" component="div" sx={{ fontWeight: "bold", fontSize: "12px", opacity: 0.5 }}
             >
-              Puts Change
+              Puts
             </Typography>
             <Typography variant="body1" color="inherit" component="div" sx={{ fontWeight: "bold" }}
             >
@@ -26,7 +26,7 @@ const OIChangeDataBox = ({ totalCallOI, totalPutOI, pcr, underlyingPrice }: OITo
           <Box sx={{ height: "60px", width: "fit-content", display: "flex", flexDirection: "column", justifyContent: "center" }}>
             <Typography color="inherit" component="div" sx={{ fontWeight: "bold", fontSize: "12px", opacity: 0.5 }}
             >
-              Calls Change
+              Calls
             </Typography>
             <Typography variant="body1" color="inherit" component="div" sx={{ fontWeight: "bold" }}
             >
