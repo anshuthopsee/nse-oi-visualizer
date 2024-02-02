@@ -41,9 +41,13 @@ const Tooltip = (props: TooltipProps) => {
       <Box sx={{ backgroundColor: "white", opacity: 0.3, height: "100%", 
         width: "100%", position: "absolute", borderRadius: "5px" }}
       />
-      <Box sx={{ backgroundColor: "transparent", height: "100%", 
+      <Box sx={{ backgroundColor: "transparent", height: "100%", position: "absolute", 
         width: "100%", backdropFilter: "blur(5px)", borderRadius: "5px", 
         border: 1, borderColor: "divider" }}
+      />
+      <Box sx={{ backgroundColor: "transparent", height: "100%", position: "relative",
+        width: "100%", borderRadius: "5px", 
+        border: 1, borderColor: "divider", zIndex: 9 }}
       >
         <Typography variant="body1" sx={{ fontWeight: "bold", mx: "5px" }}>
           Strike Price: {strikePrice}
