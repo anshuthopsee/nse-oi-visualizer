@@ -146,6 +146,34 @@ const OIChart = ({ data, spotPrice, type }: OIChartProps) => {
     />
   }), [data, xScale, xSubGroupScale, yScale, boundedHeight, type, hoveredGroupStrike]);
 
+  const xAxis = useMemo(() => {
+    return <foreignObject
+      id="g" 
+      transform={`translate(${[
+      0,
+      boundedHeight,
+    ].join(",")})`}
+      width={boundedWidth}
+      height={marginBottom}
+      style={{ overflow: "visible" }}
+    >
+      <XAxis
+        xScale={xScale}
+        yScale={yScale}
+        boundedHeight={boundedHeight}
+        label="Strike Price"
+        spotPrice={spotPrice}
+      />
+    </foreignObject>
+  }, [xScale, yScale, boundedHeight, marginBottom, boundedWidth, spotPrice]);
+
+  const yAxis = useMemo(() => {
+    return <YAxis
+      yScale={yScale}
+      label={type === "changeinOpenInterest" ? "OI Change" : "OI Total"}
+    />
+  }, [yScale, type]);
+
   return (
     <div ref={chartContainerRef} style={{ width: "100%", height: "100%", display: "flex", position: "relative" }}>
       <LoadingOverlay requestStatus={requestStatus} />
@@ -156,28 +184,8 @@ const OIChart = ({ data, spotPrice, type }: OIChartProps) => {
         ].join(",")})`}
         >
           {bars}
-          <foreignObject
-            id="g" 
-            transform={`translate(${[
-            0,
-            boundedHeight,
-          ].join(",")})`}
-            width={boundedWidth}
-            height={marginBottom}
-            style={{ overflow: "visible" }}
-          >
-            <XAxis
-              xScale={xScale}
-              yScale={yScale}
-              boundedHeight={boundedHeight}
-              label="Strike Price"
-              spotPrice={spotPrice}
-            />
-          </foreignObject>
-          <YAxis
-            yScale={yScale}
-            label="OI Change"
-          />
+          {xAxis}
+          {yAxis}
           <Tooltip
             type={type}
             hovered={hoveredGroupStrike !== null}
