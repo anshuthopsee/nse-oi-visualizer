@@ -21,8 +21,6 @@ const Bar = ({ d, xScale, xSubGroupScale, yScale, boundedHeight, type, hovered }
   const yPESign = Math.sign(d.PE[type] || 0);
   const yPE = yScale(d.PE[type] || 0);
 
-  // Can add margin to the 3rd rect
-
   return (
     <g>
       <rect
@@ -61,18 +59,6 @@ const Bar = ({ d, xScale, xSubGroupScale, yScale, boundedHeight, type, hovered }
           stroke="currentColor"
         />
       )}
-      <rect
-        x={0}
-        y={0}
-        width={xSubGroupScale.bandwidth() * 2}
-        height={boundedHeight}
-        stroke="transparent"
-        fill="transparent"
-        fillOpacity={1}
-        strokeWidth={1}
-        transform={"translate(" + xScale(String(d.strikePrice)) + ", 0)"}
-        rx={1}
-      />
     </g>
   );
 };

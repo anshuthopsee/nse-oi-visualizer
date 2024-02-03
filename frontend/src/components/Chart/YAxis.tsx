@@ -22,14 +22,11 @@ const YAxis = ({ yScale, label }: YAxisProps) => {
 
   return (
     <>
-      {/* Main vertical line */}
       <path
         d={["M", 0, range[0], "L", 0, range[1]].join(" ")}
         fill="none"
         stroke="none"
       />
-
-      {/* Ticks and labels */}
       {ticks.map(({ value, yOffset }, i) => {
         const numberOfTicksToShow = ticks.length > 10 ? 10 : ticks.length;
 
