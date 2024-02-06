@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useLayoutEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
 
 type TooltipProps = {
@@ -15,14 +15,31 @@ type TooltipProps = {
 
 const Tooltip = (props: TooltipProps) => {
 
-  const tooltipRef = useRef<SVGForeignObjectElement>(null);
+  const tooltipContentRef = useRef<HTMLDivElement>(null);
+  const [tooltiplWidth, setTooltipWidth] = useState(0);
+  const [tooltipHeight, setTooltipHeight] = useState(0);
+  const [xPos, setXPos] = useState(0);
+  const [yPos, setYPos] = useState(0);
 
   const { type, x, y, strikePrice, boundedHeight, boundedWidth, hovered, callOIValue, putOIValue } = props;
 
-  if (!hovered) return null;
+  useLayoutEffect(() => {
+    if (!tooltipContentRef.current) return;
 
-  const xPos = x + 170 > boundedWidth ? x - 180 : x;
-  const yPos = y + 80 > boundedHeight ? y - 80 : y;
+    const tooltipContent = tooltipContentRef.current;
+    const { width, height } = tooltipContent.getBoundingClientRect();
+
+    const xPos = x + width > boundedWidth ? x - width - 20 : x;
+    const yPos = y + height > boundedHeight ? y - height : y;
+
+    setTooltipWidth(width);
+    setTooltipHeight(height);
+
+    setXPos(xPos);
+    setYPos(yPos);
+  }, [x, y, boundedHeight, boundedWidth])
+
+  if (!hovered) return null;
 
   let putOILabel = "";
   let callOILabel =  "";
@@ -36,35 +53,37 @@ const Tooltip = (props: TooltipProps) => {
   };
 
   return (
-    <foreignObject ref={tooltipRef} transform={`translate(${xPos}, ${yPos})`} 
-      height={80} width={170} style={{ position: "relative", }}>
-      <Box sx={{ backgroundColor: "white", opacity: 0.3, height: "100%", 
-        width: "100%", position: "absolute", borderRadius: "5px" }}
-      />
-      <Box sx={{ backgroundColor: "transparent", height: "100%", position: "absolute", 
-        width: "100%", backdropFilter: "blur(5px)", borderRadius: "5px", 
-        border: 1, borderColor: "divider" }}
-      />
-      <Box sx={{ backgroundColor: "transparent", height: "100%", position: "relative",
-        width: "100%", borderRadius: "5px", 
-        border: 1, borderColor: "divider", zIndex: 9 }}
-      >
-        <Typography variant="body1" sx={{ fontWeight: "bold", mx: "5px" }}>
-          Strike Price: {strikePrice}
-        </Typography>
-        <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
-          <Box sx={{ height: "14px", width: "14px", backgroundColor: "#15d458", 
-            border: 1, borderColor: "text.primary", borderRadius: "2px" }}
-          />
-          <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`${putOILabel}: ${putOIValue}`}</Typography>
-        </div>
-        <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
-          <Box sx={{ height: "14px", width: "14px", backgroundColor: "#eb3434", 
-            border: 1, borderColor: "text.primary", borderRadius: "2px" }}
-          />
-          <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`${callOILabel}: ${callOIValue}`}</Typography>
-        </div>
-      </Box>
+    <foreignObject transform={`translate(${xPos}, ${yPos})`} 
+      height={tooltipHeight} width={tooltiplWidth} style={{ position: "relative", }}>
+      <div ref={tooltipContentRef} style={{ position: "relative", height: "max-content", width: "max-content", minWidth: "170px" }}>
+        <Box sx={{ backgroundColor: "white", opacity: 0.3, height: "100%", 
+          width: "100%", position: "absolute", borderRadius: "5px" }}
+        />
+        <Box sx={{ backgroundColor: "transparent", height: "100%", position: "absolute", 
+          width: "100%", backdropFilter: "blur(5px)", borderRadius: "5px", 
+          border: 1, borderColor: "divider" }}
+        />
+        <Box sx={{ backgroundColor: "transparent", height: "100%", position: "relative",
+          width: "100%", borderRadius: "5px", display: "flex", flexDirection: "column", 
+          border: 1, borderColor: "divider", zIndex: 9, pb: "5px" }}
+        >
+          <Typography variant="body1" sx={{ fontWeight: "bold", mx: "5px" }}>
+            Strike Price: {strikePrice}
+          </Typography>
+          <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
+            <Box sx={{ height: "14px", width: "14px", backgroundColor: "#15d458", 
+              border: 1, borderColor: "text.primary", borderRadius: "2px" }}
+            />
+            <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`${putOILabel}: ${putOIValue}`}</Typography>
+          </div>
+          <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
+            <Box sx={{ height: "14px", width: "14px", backgroundColor: "#eb3434", 
+              border: 1, borderColor: "text.primary", borderRadius: "2px" }}
+            />
+            <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`${callOILabel}: ${callOIValue}`}</Typography>
+          </div>
+        </Box>
+      </div>
     </foreignObject>
   );
 };
