@@ -211,8 +211,6 @@ const mergeAndAddValues = (currentData: ContractData, nextData: ContractData) =>
   return merged;
 };
 
-// sort this out and fix icon positioning
-
 export const filterDataOnStrikeRange = (data: DataItem[], minStrike: number, maxStrike: number) => {
   return data.filter((item) => item.strikePrice >= minStrike && item.strikePrice <= maxStrike);
 };
@@ -261,7 +259,7 @@ export const formatAndAddSuffix = (value: number) => {
   if (Math.abs(value) >= 100000) {
     return (value / 100000).toFixed(1) + "L";
   } else if (Math.abs(value) >= 1000) {
-    return (value / 100).toFixed(0) + "K";
+    return (value / 1000).toFixed(0) + "K";
   } else {
     return String(value);
   };
