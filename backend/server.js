@@ -1,4 +1,3 @@
-import cors from 'cors';
 import express from 'express';
 import axios from 'axios';
 import UserAgent from 'user-agents';
@@ -51,18 +50,7 @@ const getCookiesWithRetry = async () => {
   };
 };
 
-const whitelist = ['http://localhost:5173']
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-};
-
-app.get('/*', cors(corsOptions), async (req, res) => {
+app.get('/*', async (req, res) => {
   const now = new Date();
   const time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
   console.log(`Request received at ${time}`);

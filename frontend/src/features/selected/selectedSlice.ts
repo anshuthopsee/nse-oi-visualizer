@@ -52,7 +52,7 @@ export const fetchOIData = createAsyncThunk("data/fetchOIData", async ({ underly
 
   identifier =  encodeURIComponent(identifier);
 
-  const url = `http://localhost:6123/?identifier=${identifier}`;
+  const url = `/api?identifier=${identifier}`;
 
   const options = {
     method: 'GET',
