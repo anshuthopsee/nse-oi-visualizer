@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { useSelector } from "react-redux";
-import { getData, getExpiries, getStrikeRange } from "../../features/selected/selectedSlice";
+import { type TransformedData } from "../../app/services/openInterest";
+import { type Expiries, StrikeRange } from "../../features/selected/types";
 import { combineCurrentAndNextData, filterDataOnStrikeRange } from "../../utils";
 import OIChangeDataBox from "./OIChangeDataBox";
 import { Box, Typography } from "@mui/material";
@@ -11,10 +11,15 @@ import OIChart from "../Chart/OIChart";
 // Make a reusable bar chart that will work for OI Change, Historical OI and Total OI vs Time
 // Which means, it should be configurable for negative values also and should be able to plot line over the bars
 
-const OIChange = () => {
-  const data = useSelector(getData);
-  const expiries = useSelector(getExpiries);
-  const strikeRange = useSelector(getStrikeRange);
+type OIChangeProps = {
+  data: TransformedData | null;
+  expiries: Expiries;
+  strikeRange: StrikeRange;
+  isFetching: boolean;
+  isError: boolean;
+};
+
+const OIChange = ({ data, expiries, strikeRange, isFetching, isError }: OIChangeProps) => {
 
   const expiryDates = useMemo(() => {
     switch (true) {
@@ -135,7 +140,13 @@ const OIChange = () => {
         </Box>
       </Box>
       <Box sx={{ flex: 1, minWidth: 0, minHeight: 0, overflow: "hidden" }}>
-        <OIChart data={filteredData || []} spotPrice={underlyingPrice} type="changeinOpenInterest"/>
+        <OIChart 
+          data={filteredData || []} 
+          spotPrice={underlyingPrice} 
+          type="changeinOpenInterest"
+          isFetching={isFetching}
+          isError={isError}
+        />
       </Box>
       <Box sx={{ height: "60px", width: "100%", minWidth: 0, 
         minHeight: 0, overflow: "hidden", borderTop: 1, 
