@@ -1,9 +1,7 @@
 import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
 import * as d3 from "d3";
 import { bisector } from "d3";
 import { type DataItem } from "../../features/selected/types";
-import { getRequestStatus } from "../../features/selected/selectedSlice";
 import useChartDimensions from "../../hooks/useChartDimensions";
 import BarGroup from "./Bar";
 import XAxis from "./XAxis";
@@ -22,18 +20,18 @@ export const bisectDate = (data: number[], x0: number) => {
 type OIChartProps = {
   data: DataItem[],
   type: "changeinOpenInterest" | "openInterest",
+  isFetching: boolean,
+  isError: boolean,
   spotPrice?: number | null,
 };
 
-const OIChart = ({ data, spotPrice, type }: OIChartProps) => {
+const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) => {
 
   const [mouseXPos, setMouseXPos] = useState<number | null>(null);
   const [mouseYPos, setMouseYPos] = useState<number | null>(null);
   const [hoveredCallValue, setHoveredCallValue] = useState<number| null>(null);
   const [hoveredPutValue, setHoveredPutValue] = useState<number| null>(null);
   const [hoveredGroupStrike, setHoveredGroupStrike] = useState<string | null>(null);
-
-  const requestStatus = useSelector(getRequestStatus);
   const [chartContainerRef, chartDimensions] = useChartDimensions();
   const { 
     width, 
@@ -176,7 +174,7 @@ const OIChart = ({ data, spotPrice, type }: OIChartProps) => {
 
   return (
     <div ref={chartContainerRef} style={{ width: "100%", height: "100%", display: "flex", position: "relative" }}>
-      <LoadingOverlay requestStatus={requestStatus} />
+      <LoadingOverlay isFetching={isFetching} isError={isError} />
       <svg width={width} height={height}>
         <g transform={`translate(${[
           marginLeft,
