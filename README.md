@@ -23,9 +23,8 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 7. You are good to go.
 
 ## To be added
-1. Timestamps showing last updated time.
-2. FII and DII data visualization.
-3. Option Payoff visualization? Maybe.
+1. FII and DII data visualization.
+2. Option Payoff visualization? Maybe.
 
 ## References
 1. Tried to replicate the UI of https://www.sensibull.com/ app.
