@@ -1,6 +1,7 @@
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import themeReducer, { setThemeMode } from "../features/theme/themeSlice";
 import selectedReducer, { setUnderlying } from "../features/selected/selectedSlice";
+import { openInterestApi } from "../app/services/openInterest";
 import drawerReducer from "../features/drawer/drawerSlice";
 import identifiers, { type IdentifiersType as UnderlyingType } from "../identifiers";
 
@@ -25,8 +26,9 @@ const store = configureStore({
     theme: themeReducer,
     selected: selectedReducer,
     drawer: drawerReducer,
+    [openInterestApi.reducerPath]: openInterestApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(localStorageMiddleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(openInterestApi.middleware, localStorageMiddleware),
 });
 
 const themeMode = localStorage.getItem("themeMode");

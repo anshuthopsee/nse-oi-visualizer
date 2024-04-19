@@ -1,7 +1,9 @@
 import { useSelector } from 'react-redux';
 import { getThemeMode } from '../features/theme/themeSlice';
 import { Outlet } from 'react-router-dom';
-import { ThemeProvider, Container, CssBaseline } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import Container from '@mui/material/Container';
 import Header from './Header';
 import { lightTheme, darkTheme } from '../theme';
 

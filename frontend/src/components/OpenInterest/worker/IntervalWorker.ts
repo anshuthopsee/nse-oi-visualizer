@@ -29,8 +29,6 @@ const CustomInterval = (callbackFn: () => void) => {
 
   const timeToNextMinute = nextMinute.getTime() - currentTime;
 
-  callbackFn();
-
   const timeout = setTimeout(() => {
     callbackFn();
     
@@ -52,7 +50,7 @@ self.onmessage = (e) => {
   const { action }: Message = e.data;
 
   if (action === "start") {
-    console.log("starting the worker");
+    console.log("starting worker");
     clearCustomInterval = CustomInterval(() => {
       self.postMessage("get-oi");
     });
