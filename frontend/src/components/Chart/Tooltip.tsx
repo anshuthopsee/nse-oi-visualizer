@@ -3,14 +3,18 @@ import { Box, Typography } from "@mui/material";
 
 type TooltipProps = {
   type: "changeinOpenInterest" | "openInterest";
-  hovered: boolean;
+  show: boolean;
   x: number;
   y: number;
-  strikePrice: number | string;
+  strikePrice: number | string | null;
   boundedHeight: number;
   boundedWidth: number;
-  callOIValue: number;
-  putOIValue: number;
+  callOIValue: number | null;
+  putOIValue: number | null;
+  callPrice: number | null;
+  putPrice: number | null;
+  callIV: number | null;
+  putIV: number | null;
 };
 
 const Tooltip = (props: TooltipProps) => {
@@ -21,7 +25,12 @@ const Tooltip = (props: TooltipProps) => {
   const [xPos, setXPos] = useState(0);
   const [yPos, setYPos] = useState(0);
 
-  const { type, x, y, strikePrice, boundedHeight, boundedWidth, hovered, callOIValue, putOIValue } = props;
+  const { 
+    type, x, y, strikePrice, 
+    boundedHeight, boundedWidth, show, 
+    callOIValue, putOIValue, callPrice, 
+    putPrice, callIV, putIV 
+  } = props;
 
   useLayoutEffect(() => {
     if (!tooltipContentRef.current) return;
@@ -39,7 +48,7 @@ const Tooltip = (props: TooltipProps) => {
     setYPos(yPos);
   }, [x, y, boundedHeight, boundedWidth])
 
-  if (!hovered) return null;
+  if (!show) return null;
 
   let putOILabel = "";
   let callOILabel =  "";
@@ -56,7 +65,7 @@ const Tooltip = (props: TooltipProps) => {
     <foreignObject transform={`translate(${xPos}, ${yPos})`} 
       height={tooltipHeight} width={tooltiplWidth} style={{ position: "relative", }}>
       <div ref={tooltipContentRef} style={{ position: "relative", height: "max-content", width: "max-content", minWidth: "170px" }}>
-        <Box sx={{ backgroundColor: "white", opacity: 0.3, height: "100%", 
+        <Box sx={{ backgroundColor: "white", opacity: 0.1, height: "100%", 
           width: "100%", position: "absolute", borderRadius: "5px" }}
         />
         <Box sx={{ backgroundColor: "transparent", height: "100%", position: "absolute", 
@@ -77,10 +86,34 @@ const Tooltip = (props: TooltipProps) => {
             <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`${putOILabel}: ${putOIValue}`}</Typography>
           </div>
           <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
+            <Box sx={{ height: "14px", width: "14px", backgroundColor: "#15d458", 
+              border: 1, borderColor: "text.primary", borderRadius: "2px" }}
+            />
+            <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`Put Price: ₹${putPrice}`}</Typography>
+          </div>
+          <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
+            <Box sx={{ height: "14px", width: "14px", backgroundColor: "#15d458", 
+              border: 1, borderColor: "text.primary", borderRadius: "2px" }}
+            />
+            <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`Put IV: ${putIV}`}</Typography>
+          </div>
+          <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
             <Box sx={{ height: "14px", width: "14px", backgroundColor: "#eb3434", 
               border: 1, borderColor: "text.primary", borderRadius: "2px" }}
             />
             <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`${callOILabel}: ${callOIValue}`}</Typography>
+          </div>
+          <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
+            <Box sx={{ height: "14px", width: "14px", backgroundColor: "#eb3434", 
+              border: 1, borderColor: "text.primary", borderRadius: "2px" }}
+            />
+            <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`Call Price: ₹${callPrice}`}</Typography>
+          </div>
+          <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
+            <Box sx={{ height: "14px", width: "14px", backgroundColor: "#eb3434", 
+              border: 1, borderColor: "text.primary", borderRadius: "2px" }}
+            />
+            <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`Call IV: ${callIV}`}</Typography>
           </div>
         </Box>
       </div>

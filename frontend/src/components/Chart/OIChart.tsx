@@ -17,6 +17,17 @@ export const bisectDate = (data: number[], x0: number) => {
   return d1 && (x0 - d0 > d1 - x0) ? d1 : d0;
 };
 
+type TooltipState = {
+  show: boolean,
+  strikePrice: string | null,
+  callOI: number | null,
+  putOI: number | null,
+  callPrice: number | null,
+  putPrice: number | null,
+  callIV: number | null,
+  putIV: number | null,
+}
+
 type OIChartProps = {
   data: DataItem[],
   type: "changeinOpenInterest" | "openInterest",
@@ -29,10 +40,19 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
 
   const [mouseXPos, setMouseXPos] = useState<number | null>(null);
   const [mouseYPos, setMouseYPos] = useState<number | null>(null);
-  const [hoveredCallValue, setHoveredCallValue] = useState<number| null>(null);
-  const [hoveredPutValue, setHoveredPutValue] = useState<number| null>(null);
-  const [hoveredGroupStrike, setHoveredGroupStrike] = useState<string | null>(null);
   const [chartContainerRef, chartDimensions] = useChartDimensions();
+
+  const [tooltipState, setTooltipState] = useState<TooltipState>({
+    show: false,
+    strikePrice: null,
+    callOI: null,
+    putOI: null,
+    callPrice: null,
+    putPrice: null,
+    callIV: null,
+    putIV: null,
+  });
+
   const { 
     width, 
     height, 
@@ -110,27 +130,40 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
     const nearestStrikePriceData = data.find((d) => String(d.strikePrice) === nearestStrikePrice);
 
     if (nearestStrikePriceData) {
-      const nearestStrikePriceCE = nearestStrikePriceData.CE?.[type] || 0;
-      const nearestStrikePricePE = nearestStrikePriceData.PE?.[type] || 0;
-
-      setHoveredCallValue(nearestStrikePriceCE);
-      setHoveredPutValue(nearestStrikePricePE);
+      setTooltipState({
+        show: true,
+        strikePrice: nearestStrikePrice,
+        callOI: nearestStrikePriceData.CE?.[type] || 0,
+        putOI: nearestStrikePriceData.PE?.[type] || 0,
+        callPrice: nearestStrikePriceData.CE?.lastPrice || 0,
+        putPrice: nearestStrikePriceData.PE?.lastPrice || 0,
+        callIV: nearestStrikePriceData.CE?.impliedVolatility || 0,
+        putIV: nearestStrikePriceData.PE?.impliedVolatility || 0,
+      })
     };
 
     setMouseXPos(x + 10);
     setMouseYPos(y);
-
-    setHoveredGroupStrike(nearestStrikePrice);
   };
 
   const handleMouseLeave = () => {
-    setHoveredGroupStrike(null);
-    setHoveredCallValue(null);
-    setHoveredPutValue(null);
+    setTooltipState({
+      show: false,
+      strikePrice: null,
+      callOI: null,
+      putOI: null,
+      callPrice: null,
+      putPrice: null,
+      callIV: null,
+      putIV: null,
+    });
+
+    setMouseXPos(null);
+    setMouseYPos(null);
   };
 
   const bars = useMemo(() => data.map((d, i) => {
-    const hovered = hoveredGroupStrike === String(d.strikePrice);
+    const hovered = tooltipState.strikePrice === String(d.strikePrice);
 
     return <BarGroup
       key={i} 
@@ -142,7 +175,7 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
       type={type}
       hovered={hovered}
     />
-  }), [data, xScale, xSubGroupScale, yScale, boundedHeight, type, hoveredGroupStrike]);
+  }), [data, xScale, xSubGroupScale, yScale, boundedHeight, type, tooltipState]);
 
   const xAxis = useMemo(() => {
     return <foreignObject
@@ -186,12 +219,16 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
           {yAxis}
           <Tooltip
             type={type}
-            hovered={hoveredGroupStrike !== null}
-            x={ mouseXPos || 0}
-            y={ mouseYPos || 0}
-            strikePrice={hoveredGroupStrike || 0}
-            callOIValue={hoveredCallValue || 0}
-            putOIValue={hoveredPutValue || 0}
+            show={tooltipState.show}
+            x={mouseXPos || 0}
+            y={mouseYPos || 0}
+            strikePrice={tooltipState.strikePrice}
+            callOIValue={tooltipState.callOI}
+            putOIValue={tooltipState.putOI}
+            callPrice={tooltipState.callPrice}
+            putPrice={tooltipState.putPrice}
+            callIV={tooltipState.callIV}
+            putIV={tooltipState.putIV}
             boundedHeight={boundedHeight}
             boundedWidth={boundedWidth}
           />
