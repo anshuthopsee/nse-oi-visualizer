@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import { bisector } from "d3";
 import { type DataItem } from "../../features/selected/types";
 import useChartDimensions from "../../hooks/useChartDimensions";
-import BarGroup from "./Bar";
+import BarGroup from "./BarGroup";
 import XAxis from "./XAxis";
 import YAxis from "./YAxis";
 import LoadingOverlay from "./LoadingOverlay";
@@ -201,6 +201,7 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
   const yAxis = useMemo(() => {
     return <YAxis
       yScale={yScale}
+      boundedWidth={boundedWidth}
       label={type === "changeinOpenInterest" ? "OI Change" : "OI Total"}
     />
   }, [yScale, type]);
@@ -214,9 +215,9 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
           marginTop
         ].join(",")})`}
         >
+          {yAxis}
           {bars}
           {xAxis}
-          {yAxis}
           <Tooltip
             type={type}
             show={tooltipState.show}

@@ -106,7 +106,7 @@ const XAxis = ({
             stroke="currentColor"
             strokeDasharray={"8 8"}
             strokeWidth={2.5}
-            opacity={1}
+            opacity={0.5}
           />
         </g>
       )}

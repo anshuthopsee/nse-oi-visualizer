@@ -5,16 +5,17 @@ import { formatAndAddSuffix } from '../../utils';
 type YAxisProps = {
   yScale: ScaleLinear<number, number>;
   label?: string;
+  boundedWidth: number;
 };
 
-const YAxis = ({ yScale, label }: YAxisProps) => {
+const YAxis = ({ yScale, label, boundedWidth }: YAxisProps) => {
 
   const range = useMemo(() => {
     return yScale.range();
   }, [yScale]);
 
   const ticks = useMemo(() => {
-    return yScale.ticks().map((value) => ({
+    return yScale.ticks(7).map((value) => ({
       value,
       yOffset: yScale(value),
     }));
@@ -35,7 +36,7 @@ const YAxis = ({ yScale, label }: YAxisProps) => {
 
         return (
           <g key={value} transform={`translate(0, ${yOffset})`}>
-            <line x2={-6} stroke="currentColor" opacity={0} />
+            <line x2={boundedWidth} stroke="currentColor" opacity={0.2} />
             <text
               key={value}
               fill="currentColor"
