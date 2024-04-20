@@ -162,11 +162,11 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
     setMouseYPos(null);
   };
 
-  const bars = useMemo(() => data.map((d, i) => {
+  const bars = useMemo(() => data.map((d) => {
     const hovered = tooltipState.strikePrice === String(d.strikePrice);
 
     return <BarGroup
-      key={i} 
+      key={d.strikePrice} 
       d={d} 
       xScale={xScale} 
       xSubGroupScale={xSubGroupScale} 
@@ -175,7 +175,7 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
       type={type}
       hovered={hovered}
     />
-  }), [data, xScale, xSubGroupScale, yScale, boundedHeight, type, tooltipState]);
+  }), [data, xScale, xSubGroupScale, yScale, boundedHeight, type, tooltipState.strikePrice]);
 
   const xAxis = useMemo(() => {
     return <foreignObject

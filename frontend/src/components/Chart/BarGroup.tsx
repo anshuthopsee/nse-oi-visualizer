@@ -40,8 +40,7 @@ const BarGroup = ({ d, xScale, xSubGroupScale, yScale, boundedHeight, type, hove
     )
   }, [xSubGroupScale, xScale, boundedHeight, hovered, d.strikePrice]);
 
-  const putBarRect = useMemo(() => {
-    return (
+  const putBarRect = (
       <rect
         x={xSubGroupScale("PE")}
         y={Math.min(yPE, yScale(0))}
@@ -55,11 +54,9 @@ const BarGroup = ({ d, xScale, xSubGroupScale, yScale, boundedHeight, type, hove
         transform={"translate(" + xScale(String(d.strikePrice)) + ", 0)"}
         rx={1}
       />
-    )
-  }, [xSubGroupScale, xScale, yScale, d, type, boundedHeight]);
+    );
 
-  const callBarRect = useMemo(() => {
-    return (
+  const callBarRect = (
       <rect
         x={xSubGroupScale("CE")}
         y={Math.min(yCE, yScale(0))}
@@ -73,15 +70,10 @@ const BarGroup = ({ d, xScale, xSubGroupScale, yScale, boundedHeight, type, hove
         transform={"translate(" + xScale(String(d.strikePrice)) + ", 0)"}
         rx={1}
       />
-    )
-  }, [xSubGroupScale, xScale, yScale, d, type, boundedHeight]);
+    );
 
-  const barGroupLine = useMemo(() => {
-
-    if (!hovered) return null;
-
-    return (
-      <line
+  const barGroupLine = (
+      hovered && <line
         x1={(xScale(String(d.strikePrice)) || 0) + xSubGroupScale.bandwidth()}
         x2={(xScale(String(d.strikePrice)) || 0) + xSubGroupScale.bandwidth()}
         y1={0}
@@ -89,8 +81,7 @@ const BarGroup = ({ d, xScale, xSubGroupScale, yScale, boundedHeight, type, hove
         strokeWidth={0.7}
         stroke="currentColor"
       />
-    )
-  }, [hovered, xScale, xSubGroupScale, boundedHeight, d.strikePrice]);
+    );
 
   return (
     <g>
