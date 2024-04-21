@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect } from "react";
 import useTheme from "@mui/material/styles/useTheme";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useDispatch, useSelector } from "react-redux";
-import { useOpenInterestQuery } from "../../app/services/openInterest";
+import { useOpenInterestQuery, openInterestApi } from "../../app/services/openInterest";
 import { type AppDispatch } from "../../store";
 import { getUnderlying, getExpiries, getStrikeRange, getStrikeDistanceFromATM, setMinMaxStrike, setLastRequestAt } from "../../features/selected/selectedSlice";
 import { getMinAndMaxStrikePrice, getCurrentTime } from "../../utils";
@@ -22,7 +22,7 @@ const OpenInterest = () => {
   const strikeRange = useSelector(getStrikeRange);
   const strikeDistanceFromATM = useSelector(getStrikeDistanceFromATM);
   const drawerState = useSelector(getDrawerState);
-  const { data, isFetching, isError, refetch } = useOpenInterestQuery({ underlying: underlying });
+  const { data, isFetching, isError } = useOpenInterestQuery({ underlying: underlying });
 
   useEffect(() => {
     if (isLargeScreen) {
@@ -55,7 +55,7 @@ const OpenInterest = () => {
     IntervalWorker.onmessage = (e) => {
       if (e.data === "get-oi") {
         console.log("getting oi data");
-        refetch();
+        dispatch(openInterestApi.util.invalidateTags(["OpenInterest"]));
       };
     };
 

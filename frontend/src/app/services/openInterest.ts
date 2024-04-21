@@ -12,6 +12,7 @@ export type TransformedData = ReturnType<typeof formatData>;
 export const openInterestApi = createApi({
   reducerPath: "openInterestApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/" }),
+  tagTypes: ["OpenInterest"],
   endpoints: (builder) => ({
     openInterest: builder.query<TransformedData, OpenInterestRequestArgs>({
       query: ({ underlying }) => {
@@ -27,10 +28,11 @@ export const openInterestApi = createApi({
 
         return `/api?identifier=${identifier}`;
       },
+      providesTags: ["OpenInterest"],
       transformResponse: (response: UntransformedData, _meta, args) => {
         return formatData(response, args.underlying);
       },
-      keepUnusedDataFor: 0,
+      keepUnusedDataFor: 200,
     }),
   }),
 });
