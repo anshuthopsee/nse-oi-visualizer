@@ -10,8 +10,9 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 3. Shows current and next expiry data.
 4. Has a Strike range selector to adjust the no. of strikes to be shown.
 5. Auto-updates data, using a web worker, precisely at times when the minutes are divisible by 3 (ex: 9:30, 9:33, 9:36,...,9:57, 10:00 etc).
-6. Charts have tooltips.
-7. Local storage persistence of the selected underlying.
+6. Caches data with RTK Query for a maximum of 3 minutes.
+7. Charts have tooltips.
+8. Local storage persistence of the selected underlying.
 
 ## How to run it locally
 1. Clone the repository.
