@@ -13,7 +13,7 @@ type SelectedState = {
   expiries: Expiries;
   strikeRange: StrikeRange;
   strikeDistanceFromATM: StrikeDistancesFromATM;
-  lastRequestAt: string | null;
+  nextUpdateAt: string | null;
 };
 
 const initialState: SelectedState = {
@@ -27,7 +27,7 @@ const initialState: SelectedState = {
     max: null,
   },
   strikeDistanceFromATM: "10",
-  lastRequestAt: null,
+  nextUpdateAt: null,
 };
 
 const selectSlice = createSlice({
@@ -53,8 +53,8 @@ const selectSlice = createSlice({
     setStrikeDistanceFromATM: (state, action: PayloadAction<StrikeDistancesFromATM>) => {
       state.strikeDistanceFromATM = action.payload;
     },
-    setLastRequestAt: (state, action: PayloadAction<string>) => {
-      state.lastRequestAt = action.payload;
+    setNextUpdateAt: (state, action: PayloadAction<string>) => {
+      state.nextUpdateAt = action.payload;
     }
   },
 });
@@ -67,8 +67,8 @@ export const getStrikeRange = (store: RootState) => store.selected.strikeRange;
 
 export const getStrikeDistanceFromATM = (store: RootState) => store.selected.strikeDistanceFromATM;
 
-export const getLastRequestAt = (store: RootState) => store.selected.lastRequestAt;
+export const getNextUpdateAt = (store: RootState) => store.selected.nextUpdateAt;
 
-export const { setUnderlying, setExpiries, setMinMaxStrike , setStrikeRange, setStrikeDistanceFromATM, setLastRequestAt } = selectSlice.actions;
+export const { setUnderlying, setExpiries, setMinMaxStrike , setStrikeRange, setStrikeDistanceFromATM, setNextUpdateAt } = selectSlice.actions;
 
 export default selectSlice.reducer;

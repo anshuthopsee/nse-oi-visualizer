@@ -1,4 +1,3 @@
-
 const generateMinuteMarks = () => {
   const minuteMarks = [];
   for (let i = 0; i <= 60; i+=3) {
@@ -7,7 +6,6 @@ const generateMinuteMarks = () => {
 
   return minuteMarks;
 };
-
 // need to fix accuracy in firefox
 
 const CustomInterval = (callbackFn: () => void) => {
@@ -18,16 +16,12 @@ const CustomInterval = (callbackFn: () => void) => {
   const minuteMarks = generateMinuteMarks();
 
   const nextMinuteMark = minuteMarks.find((mark) => mark > currentMinutes);
-  
-  if (nextMinuteMark === undefined) {
-    throw new Error("nextMinuteMark is undefined");
-  };
 
-  const nextMinute = new Date();
-  nextMinute.setMinutes(nextMinuteMark);
-  nextMinute.setSeconds(0);
+  const next = new Date();
+  next.setMinutes(nextMinuteMark || 0);
+  next.setSeconds(0);
 
-  const timeToNextMinute = nextMinute.getTime() - currentTime;
+  const timeToNext = next.getTime() - currentTime;
 
   const timeout = setTimeout(() => {
     callbackFn();
@@ -36,7 +30,7 @@ const CustomInterval = (callbackFn: () => void) => {
       callbackFn();
     }, 180000);
 
-  }, timeToNextMinute < 0 ? 0 : timeToNextMinute);
+  }, timeToNext < 0 ? 0 : timeToNext);
   return () => clearTimeout(timeout);
 };
 

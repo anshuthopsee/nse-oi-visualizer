@@ -4,8 +4,9 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useDispatch, useSelector } from "react-redux";
 import { useOpenInterestQuery, openInterestApi } from "../../app/services/openInterest";
 import { type AppDispatch } from "../../store";
-import { getUnderlying, getExpiries, getStrikeRange, getStrikeDistanceFromATM, setMinMaxStrike, setLastRequestAt } from "../../features/selected/selectedSlice";
-import { getMinAndMaxStrikePrice, getCurrentTime } from "../../utils";
+import { getUnderlying, getExpiries, getStrikeRange, getStrikeDistanceFromATM, 
+  setMinMaxStrike, setNextUpdateAt } from "../../features/selected/selectedSlice";
+import { getMinAndMaxStrikePrice, getNextTime } from "../../utils";
 import { getDrawerState, setDrawerState } from "../../features/drawer/drawerSlice";
 import { Grid, Box, Drawer, IconButton } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -52,7 +53,7 @@ const OpenInterest = () => {
 
     IntervalWorker.postMessage({ action: "start" });
 
-    IntervalWorker.onmessage = (e) => {
+    IntervalWorker.onmessage = (e: MessageEvent) => {
       if (e.data === "get-oi") {
         console.log("getting oi data");
         dispatch(openInterestApi.util.invalidateTags(["OpenInterest"]));
@@ -68,8 +69,9 @@ const OpenInterest = () => {
 
   useLayoutEffect(() => {
     if (!isFetching && !isError) {
-      const currentTime = getCurrentTime();
-      dispatch(setLastRequestAt(currentTime));
+      const now = new Date();
+      const nextTime = getNextTime(now);
+      dispatch(setNextUpdateAt(nextTime));
     };
 
   }, [isFetching, isError]);

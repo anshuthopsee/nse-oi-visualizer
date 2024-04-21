@@ -265,11 +265,33 @@ export const formatAndAddSuffix = (value: number) => {
   };
 };
 
-export const getCurrentTime = () => {
-  const date = new Date();
+export const getTimeStamp = (date: Date) => {
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
   return `${hours}:${minutes}`;
+};
+
+export const generateMinuteMarks = () => {
+  const minuteMarks = [];
+  for (let i = 0; i <= 60; i+=3) {
+    minuteMarks.push(i);
+  };
+
+  return minuteMarks;
+};
+
+export const getCurrentTime = (date: Date) => {
+  return getTimeStamp(date);
+};
+
+export const getNextTime = (date: Date) => {
+  const minuteMarks = generateMinuteMarks();
+  const currentMinutes = date.getMinutes();
+  const nextMinuteMark = minuteMarks.find((mark) => mark > currentMinutes);
+  const next = new Date(date);
+  next.setMinutes(nextMinuteMark || 0);
+  next.setSeconds(0);
+  return getTimeStamp(next);
 };
 
 
