@@ -28,7 +28,7 @@ const XAxis = ({
   }, [xScale, spotPrice]);
 
   const strikePriceATMPosition = useMemo(() => {
-    if (strikePriceATM === null) return null;
+    if (strikePriceATM === null || strikePriceATM === 0) return null;
 
     return (xScale(String(strikePriceATM)) || 0) + xScale.bandwidth() / 2;
   }, [xScale, strikePriceATM]);
@@ -89,7 +89,7 @@ const XAxis = ({
           </g>
         )
       })}
-      {spotPrice !== null && strikePriceATM !== null && (
+      {spotPrice !== null && strikePriceATMPosition !== null && (
         <g
           transform={`translate(${strikePriceATMPosition}, 0)`}
         >
