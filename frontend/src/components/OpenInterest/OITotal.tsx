@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { type TransformedData } from "../../app/services/openInterest";
 import { type Expiries, type StrikeRange } from "../../features/selected/types";
-import { combineCurrentAndNextData, filterDataOnStrikeRange, getExpiryDatesHeader } from "../../utils";
+import { combineSelectedExpiriesData, filterDataOnStrikeRange, getExpiryDatesHeader } from "../../utils";
 import OITotalDataBox from "./OITotalDataBox";
 import { Box, Typography } from "@mui/material";
 import OIChart from "../Chart/OIChart";
@@ -43,7 +43,7 @@ const OITotal = ({ data, expiries, strikeRange, isFetching, isError }: OITotalPr
             }
             return acc;
         }, []);
-          return combineCurrentAndNextData(data, chosenExpiries);
+          return combineSelectedExpiriesData(data, chosenExpiries);
         default:
           return null;
       };

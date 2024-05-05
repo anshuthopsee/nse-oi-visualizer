@@ -1,5 +1,5 @@
 import { IdentifiersType as Underlying } from "../identifiers";
-import { StrikeDistancesFromATM, Data, DataItem, GroupedData, Categorized,ContractData } from "../features/selected/types";
+import { StrikeDistancesFromATM, Data, DataItem,ContractData } from "../features/selected/types";
 
 const formatDate = (date: Date): string => {
   const months: string[] = [
@@ -28,99 +28,6 @@ const mergeTwoArrays = (arr1: number[], arr2: number[]) => {
   return [...new Set([...arr1, ...arr2])].sort((a, b) => a - b);
 };
 
-const getCurrentAndNextExpiry = (payload: { 
-  groupedData: GroupedData, 
-  expiryDates: string[],
-  isIndex: boolean, 
-  isMonthly: boolean }) => {
-
-  const { groupedData, expiryDates, isIndex, isMonthly } = payload;
-  
-  const parsedDates = expiryDates.map(parseDate);
-
-  const categorized: Categorized = {
-    current: null,
-    next: null 
-  };
-
-  if (!isIndex) {
-    const [currentDate, nextDate] = parsedDates;
-    const [formattedCurrentDate, formattedNextDate] = [
-      formatDate(currentDate), 
-      formatDate(nextDate)
-    ];
-
-    categorized.current = {
-      expiryDate: formattedCurrentDate,
-      data: groupedData[formattedCurrentDate]
-    };
-
-    categorized.next = {
-      expiryDate: formattedNextDate,
-      data: groupedData[formattedNextDate]
-    };
-
-    return categorized;
-  };
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  for (let i = 1; i < parsedDates.length; i++) {
-    const date = parsedDates[i - 1];
-    const nextDate = parsedDates[i];
-    const formattedDate = formatDate(date);
-
-    if (
-      categorized.current &&
-      categorized.next
-    ) {
-      break;
-    };
-
-    if (!isMonthly) {
-      if (date >= today && !categorized.current) {
-        categorized.current = {
-          expiryDate: formattedDate,
-          data: groupedData[formattedDate]
-        }
-      } else if (
-        date > today &&
-        categorized.current &&
-        !categorized.next
-      ) {
-        categorized.next = {
-          expiryDate: formattedDate,
-          data: groupedData[formattedDate]
-        };
-      };
-    } else {
-      if (
-        date >= today &&
-        date.getMonth() !== nextDate.getMonth() &&
-        !categorized.current
-      ) {
-        categorized.current = {
-          expiryDate: formattedDate,
-          data: groupedData[formattedDate]
-        }
-      } else if (
-        date > today &&
-        date.getMonth() !== nextDate.getMonth() &&
-        categorized.current &&
-        !categorized.next
-      ) {
-        categorized.next = {
-          expiryDate: formattedDate,
-          data: groupedData[formattedDate]
-        };
-      };
-    };
-  };
-
-  return categorized;
-};
-
 const getFilteredExpiries = (params: { 
   expiryDates: string[],
   isIndex: boolean }) => {
@@ -143,8 +50,6 @@ const getFilteredExpiries = (params: {
 
     let monthExpiryCount = 0;
 
-    // need to add the first two expiries (weekly?)
-
     const filteredExpiries: string[] = [];
 
     for (let i = 1; i < parsedDates.length; i++) {
@@ -154,14 +59,8 @@ const getFilteredExpiries = (params: {
 
       if (i <= 2) {
         filteredExpiries.push(formattedDate);
+        continue;
       };
-
-      // if (
-      //   filteredExpiriesData[formattedDate] &&
-      //   filteredExpiriesData[formatDate(nextDate)]
-      // ) {
-      //   break;
-      // };
 
       if (date >= today &&
           date.getMonth() !== nextDate.getMonth()
@@ -176,8 +75,7 @@ const getFilteredExpiries = (params: {
     };
 
     return filteredExpiries;
-  }
-
+  };
 };
 
 const formatData = (data: Data, underlying: Underlying) => {
@@ -191,25 +89,19 @@ const formatData = (data: Data, underlying: Underlying) => {
 
   const indices = ["NIFTY", "BANKNIFTY", "FINNIFTY", "MIDCPNIFTY"];
 
-  const isMonthly = underlying.endsWith("- Monthly");
-
   const isIndex = indices.some((index) => underlying.startsWith(index));
-
-  const formattedData = getCurrentAndNextExpiry({
-    groupedData, 
-    expiryDates: records.expiryDates,
-    isIndex,
-    isMonthly
-  });
 
   const filteredExpiries = getFilteredExpiries({
     expiryDates: records.expiryDates,
     isIndex
   });
 
-  const currentStrikePrices = formattedData.current?.data.map((item) => item.strikePrice) || [];
-  const nextStrikePrices = formattedData.next?.data.map((item) => item.strikePrice) || [];
-  const mergedStrikePrices = mergeTwoArrays(currentStrikePrices, nextStrikePrices);
+  let mergedStrikePrices: number[] = [];
+
+  for (const expiryDate of filteredExpiries) {
+    const strikePrices = groupedData[expiryDate].map((item) => item.strikePrice);
+    mergedStrikePrices = mergeTwoArrays(mergedStrikePrices, strikePrices);
+  };
 
   return {
     underlying,
@@ -282,7 +174,7 @@ export const filterDataOnStrikeRange = (data: DataItem[], minStrike: number, max
   return data.filter((item) => item.strikePrice >= minStrike && item.strikePrice <= maxStrike);
 };
 
-export const combineCurrentAndNextData = (data: ReturnType<typeof formatData>, expiries: string[]) => {
+export const combineSelectedExpiriesData = (data: ReturnType<typeof formatData>, expiries: string[]) => {
 
   const { grouped } = data;
 
