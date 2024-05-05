@@ -1,15 +1,10 @@
 import { useMemo } from "react";
 import { type TransformedData } from "../../app/services/openInterest";
 import { type Expiries, type StrikeRange } from "../../features/selected/types";
-import { combineCurrentAndNextData, filterDataOnStrikeRange } from "../../utils";
+import { combineCurrentAndNextData, filterDataOnStrikeRange, getExpiryDatesHeader } from "../../utils";
 import OITotalDataBox from "./OITotalDataBox";
 import { Box, Typography } from "@mui/material";
 import OIChart from "../Chart/OIChart";
-
-// CONTROLS SHOULD GO IN SIDEBAR ON RESIZE
-
-// Make a reusable bar chart that will work for OI Change, Historical OI and Total OI vs Time
-// Which means, it should be configurable for negative values also and should be able to plot line over the bars
 
 type OITotalProps = {
   data: TransformedData | null;
@@ -23,34 +18,38 @@ const OITotal = ({ data, expiries, strikeRange, isFetching, isError }: OITotalPr
 
   const expiryDates = useMemo(() => {
     switch (true) {
-      case data && expiries.current && expiries.next:
-        return [data.current?.expiryDate.slice(0, -5),
-           data.next?.expiryDate.slice(0, -5)];
-      case data && expiries.current && !expiries.next:
-        return [data.current?.expiryDate.slice(0, -5)];
-      case data && !expiries.current && expiries.next:
-        return [data.next?.expiryDate.slice(0, -5)];
+      case expiries !== null:
+        const chosenExpiries = expiries.reduce<string[]>((acc, { chosen, date }) => {
+          if (chosen) {
+              acc.push(date.slice(0, -5));
+          }
+          return acc;
+        }, []);
+
+        return chosenExpiries;
       default:
         return null;
     };
 
-  }, [data, expiries.current, expiries.next]);
+  }, [expiries]);
 
   const formattedData = useMemo(() => {
-    if (data && data.current && data.next) {
+    if (data && data.grouped) {
       switch (true) {
-        case expiries.current && expiries.next:
-          return combineCurrentAndNextData(data);
-        case expiries.current && !expiries.next:
-          return data.current.data;
-        case !expiries.current && expiries.next:
-          return data.next.data;
+        case expiries !== null:
+          const chosenExpiries = expiries.reduce<string[]>((acc, { chosen, date }) => {
+            if (chosen) {
+                acc.push(date);
+            }
+            return acc;
+        }, []);
+          return combineCurrentAndNextData(data, chosenExpiries);
         default:
           return null;
       };
     };
     return null;
-  }, [data, expiries.current, expiries.next]);
+  }, [data, expiries]);
 
   const filteredData = useMemo(() => {
     if (formattedData && strikeRange.min !== null && strikeRange.max !== null) {
@@ -110,17 +109,7 @@ const OITotal = ({ data, expiries, strikeRange, isFetching, isError }: OITotalPr
         <Typography variant="body1" color="inherit" component="div" 
           sx={{ fontWeight: "bold", fontSize: { xs: "12px", sm: "16px" }}}
         >
-          {`OI Total ${
-            expiryDates ? 
-              `For ${expiryDates.join(" & ").replace(/-/g, " ")} 
-                ${expiryDates.length > 1 ? 
-                  "Expiries" 
-                    : 
-                  "Expiry"
-              }` 
-            : 
-              ""
-          }`}
+          {expiryDates && getExpiryDatesHeader("OI Total for", expiryDates)}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <div style={{ display: "inline-flex", columnGap: "10px", alignItems: "center" }}>

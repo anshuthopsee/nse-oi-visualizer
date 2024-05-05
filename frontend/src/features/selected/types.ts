@@ -75,6 +75,6 @@ export type StrikeRange = {
 };
 
 export type Expiries = {
-  current: boolean;
-  next: boolean;
-};
+  date: string;
+  chosen: boolean;
+}[] | null;

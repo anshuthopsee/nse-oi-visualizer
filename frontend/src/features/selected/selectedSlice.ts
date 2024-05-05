@@ -17,11 +17,8 @@ type SelectedState = {
 };
 
 const initialState: SelectedState = {
-  underlying: "NIFTY - Weekly",
-  expiries: {
-    current: true,
-    next: true,
-  },
+  underlying: "NIFTY",
+  expiries: null,
   strikeRange: {
     min: null,
     max: null,

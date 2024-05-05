@@ -22,7 +22,7 @@ const SelectUnderlying = () => {
         <Autocomplete
           disablePortal
           disableClearable
-          id="combo-box-demo"
+          id="underlying-select"
           options={identifiers}
           value={underlying}
           onChange={(_e, selected) => {

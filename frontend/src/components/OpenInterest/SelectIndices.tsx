@@ -1,58 +1,52 @@
+import { type ReactNode } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { getUnderlying, setUnderlying } from "../../features/selected/selectedSlice";
 
-type IndexIdentifiers = "NIFTY - Weekly" | "BANKNIFTY - Weekly" | "NIFTY - Monthly" | "BANKNIFTY - Monthly";
+const benchmarkIndices = ["NIFTY", "BANKNIFTY", "MIDCPNIFTY", "FINNIFTY"] as const;
+
+type StyledButtonProps = {
+  selected: boolean;
+  onClick: () => void;
+  children: ReactNode;
+};
+
+const StyledButton = ({ selected, onClick, children }: StyledButtonProps) => {
+  return (
+    <Button 
+      variant={selected ? "contained" : "outlined"} 
+      onClick={onClick}
+      size="small"
+      sx={{ width: "fit-content", borderRadius: "5px", fontSize: "12px", minWidth: "fit-content", px: 1 }}
+    >
+      {children}
+    </Button>
+  )
+}
 
 const SelectIndices = () => {
   const dispatch = useDispatch();
   const underlying = useSelector(getUnderlying);
 
-  const handleClick = (selected: IndexIdentifiers) => {
+  const handleClick = (selected: typeof benchmarkIndices[number]) => {
     dispatch(setUnderlying(selected));
   };
 
   return (
-    <Grid container sx={{ width: "100%" }}>
-      <Grid item xs={6} sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", borderRight: 1, borderRightColor: "divider" }}>
-        <Box sx={{ height: "100%", display: "flex", mx: 1.5, flexDirection: "column" }}>
-          <Typography sx={{ fontSize: "15px", width: "100%", height: "fit-content", pt: 1 }}>NIFTY</Typography>
-          <Box sx={{ width: "100%", height: "70px", alignItems: "center", display: "flex", columnGap: 1 }}>
-            <Button size="small" disableElevation variant={underlying === "NIFTY - Weekly" ? "contained" : "outlined"}
-              sx={{ fontSize: { xs: "12px", md: "11px", xl: "12px" }, minWidth: "40px", textTransform: "none" }}
-              onClick={() => handleClick("NIFTY - Weekly")}
-            >
-              Weekly
-            </Button>
-            <Button size="small" disableElevation variant={underlying === "NIFTY - Monthly" ? "contained" : "outlined"}
-              sx={{ fontSize: { xs: "12px", md: "11px", xl: "12px" }, minWidth: "40px", textTransform: "none" }}
-              onClick={() => handleClick("NIFTY - Monthly")}
-            >
-              Monthly
-            </Button>
-          </Box>
-        </Box>
-      </Grid>
-      <Grid item xs={6} sx={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <Box sx={{ height: "100%", display: "flex", mx: 1.5, flexDirection: "column" }}>
-          <Typography sx={{ fontSize: "15px", width: "100%", height: "fit-content", pt: 1 }}>BANKNIFTY</Typography>
-          <Box sx={{ width: "100%", height: "70px", alignItems: "center", display: "flex", columnGap: 1 }}>
-            <Button size="small" disableElevation variant={underlying === "BANKNIFTY - Weekly" ? "contained" : "outlined"}
-              sx={{ fontSize: { xs: "12px", md: "11px", xl: "12px" }, minWidth: "40px", textTransform: "none" }}
-              onClick={() => handleClick("BANKNIFTY - Weekly")}
-            >
-                Weekly
-              </Button>
-            <Button size="small" disableElevation variant={underlying === "BANKNIFTY - Monthly" ? "contained" : "outlined"}
-              sx={{ fontSize: { xs: "12px", md: "11px", xl: "12px" }, minWidth: "40px", textTransform: "none" }}
-              onClick={() => handleClick("BANKNIFTY - Monthly")}
-            >
-              Monthly
-            </Button>
-          </Box>
-        </Box>
-      </Grid>
-    </Grid>
+    <Box sx={{ height: "auto", borderRadius: "5px", backgroundColor: "background.paper" }}>
+      <Typography sx={{ fontSize: "15px", width: "100%", height: "fit-content", p: 1.5, fontWeight: "bold" }}>Indices</Typography>
+      <Box sx={{ display: "inline-flex", px: "15px", pb: 2, columnGap: 1, rowGap: 2, flexWrap: "wrap" }}>
+        {benchmarkIndices.map((benchmarkIndex) => (
+          <StyledButton 
+            key={benchmarkIndex}
+            selected={underlying === benchmarkIndex}
+            onClick={() => handleClick(benchmarkIndex)}
+          >
+            {benchmarkIndex}
+          </StyledButton>
+        ))}
+      </Box>
+    </Box>
   );
 };
 

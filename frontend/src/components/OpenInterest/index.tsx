@@ -4,9 +4,9 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useDispatch, useSelector } from "react-redux";
 import { useOpenInterestQuery, openInterestApi } from "../../app/services/openInterest";
 import { type AppDispatch } from "../../store";
-import { getUnderlying, getExpiries, getStrikeRange, getStrikeDistanceFromATM, 
+import { getUnderlying, getExpiries, setExpiries, getStrikeRange, getStrikeDistanceFromATM, 
   setMinMaxStrike, setNextUpdateAt } from "../../features/selected/selectedSlice";
-import { getMinAndMaxStrikePrice, getNextTime } from "../../utils";
+import { getMinAndMaxStrikePrice, getNextTime, haveExpiriesChanged } from "../../utils";
 import { getDrawerState, setDrawerState } from "../../features/drawer/drawerSlice";
 import { Grid, Box, Drawer, IconButton } from "@mui/material";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -33,6 +33,7 @@ const OpenInterest = () => {
 
   useLayoutEffect(() => {
     if (data) {
+
       const { strikePrices, underlyingValue } = data;
       
       if (strikeDistanceFromATM === null) return;
@@ -47,6 +48,40 @@ const OpenInterest = () => {
     };
 
   }, [data, strikeDistanceFromATM]);
+
+  useLayoutEffect(() => {
+    if (data && data.underlying) {
+      const { filteredExpiries } = data;
+      const updatedExpiries = filteredExpiries.map((expiry, i) => {
+        return {
+          date: expiry,
+          chosen: i < 2
+        }
+      });
+      dispatch(setExpiries(updatedExpiries));
+    };
+  }, [data?.underlying]);
+
+  useLayoutEffect(() => {
+    if (data) {
+      const { filteredExpiries } = data;
+
+      if (!isFetching && !isError) {
+
+        if (haveExpiriesChanged((expiries || []).map((expiry) => expiry.date), filteredExpiries)) {
+          
+          const updatedExpiries = filteredExpiries.map((expiry, i) => {
+            return {
+              date: expiry,
+              chosen: i < 2
+            }
+          });
+  
+          dispatch(setExpiries(updatedExpiries));
+        };
+      };
+    };
+  }, [data, isFetching, isError]);
 
   useLayoutEffect(() => {
     const IntervalWorker: Worker = new Worker(new URL("./worker/IntervalWorker.ts", import.meta.url));

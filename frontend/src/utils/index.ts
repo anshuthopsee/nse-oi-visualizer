@@ -121,6 +121,65 @@ const getCurrentAndNextExpiry = (payload: {
   return categorized;
 };
 
+const getFilteredExpiries = (params: { 
+  expiryDates: string[],
+  isIndex: boolean }) => {
+
+  const { expiryDates, isIndex } = params;
+  const parsedDates = expiryDates.map(parseDate);
+
+  if (!isIndex) {
+    const [currentDate, nextDate] = parsedDates;
+    const [formattedCurrentDate, formattedNextDate] = [
+      formatDate(currentDate), 
+      formatDate(nextDate)
+    ];
+
+    return [formattedCurrentDate, formattedNextDate];
+
+  } else {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let monthExpiryCount = 0;
+
+    // need to add the first two expiries (weekly?)
+
+    const filteredExpiries: string[] = [];
+
+    for (let i = 1; i < parsedDates.length; i++) {
+      const date = parsedDates[i - 1];
+      const nextDate = parsedDates[i];
+      const formattedDate = formatDate(date);
+
+      if (i <= 2) {
+        filteredExpiries.push(formattedDate);
+      };
+
+      // if (
+      //   filteredExpiriesData[formattedDate] &&
+      //   filteredExpiriesData[formatDate(nextDate)]
+      // ) {
+      //   break;
+      // };
+
+      if (date >= today &&
+          date.getMonth() !== nextDate.getMonth()
+      ) {
+        if (monthExpiryCount === 2) {
+          break;
+        };
+
+        filteredExpiries.push(formattedDate);
+        monthExpiryCount++;
+      };
+    };
+
+    return filteredExpiries;
+  }
+
+};
+
 const formatData = (data: Data, underlying: Underlying) => {
   const records = data.records;
   const groupedData = records.data.reduce((group, item) => {
@@ -130,9 +189,9 @@ const formatData = (data: Data, underlying: Underlying) => {
     return group;
   }, {} as { [key: string]: DataItem[] });
 
-  const isMonthly = underlying.endsWith(" - Monthly");
-
   const indices = ["NIFTY", "BANKNIFTY", "FINNIFTY", "MIDCPNIFTY"];
+
+  const isMonthly = underlying.endsWith("- Monthly");
 
   const isIndex = indices.some((index) => underlying.startsWith(index));
 
@@ -140,7 +199,12 @@ const formatData = (data: Data, underlying: Underlying) => {
     groupedData, 
     expiryDates: records.expiryDates,
     isIndex,
-    isMonthly,
+    isMonthly
+  });
+
+  const filteredExpiries = getFilteredExpiries({
+    expiryDates: records.expiryDates,
+    isIndex
   });
 
   const currentStrikePrices = formattedData.current?.data.map((item) => item.strikePrice) || [];
@@ -148,7 +212,10 @@ const formatData = (data: Data, underlying: Underlying) => {
   const mergedStrikePrices = mergeTwoArrays(currentStrikePrices, nextStrikePrices);
 
   return {
-    ...formattedData,
+    underlying,
+    grouped: groupedData,
+    filteredExpiries,
+    allExpiries: records.expiryDates,
     strikePrices: mergedStrikePrices,
     underlyingValue: records.underlyingValue,
   };
@@ -195,17 +262,17 @@ export const getMinAndMaxStrikePrice = (
   };
 };
 
-const mergeAndAddValues = (currentData: ContractData, nextData: ContractData) => {
+const mergeAndAddValues = (dataA: ContractData, dataB: ContractData) => {
   const merged = {
-    ...currentData,
-    openInterest: currentData.openInterest + nextData.openInterest,
-    changeinOpenInterest: currentData.changeinOpenInterest + nextData.changeinOpenInterest,
-    pchangeinOpenInterest: currentData.pchangeinOpenInterest + nextData.pchangeinOpenInterest,
-    totalTradedVolume: currentData.totalTradedVolume + nextData.totalTradedVolume,
-    change: currentData.change + nextData.change,
-    pChange: currentData.pChange + nextData.pChange,
-    totalBuyQuantity: currentData.totalBuyQuantity + nextData.totalBuyQuantity,
-    totalSellQuantity: currentData.totalSellQuantity + nextData.totalSellQuantity,
+    ...dataA,
+    openInterest: dataA.openInterest + dataB.openInterest,
+    changeinOpenInterest: dataA.changeinOpenInterest + dataB.changeinOpenInterest,
+    pchangeinOpenInterest: dataA.pchangeinOpenInterest + dataB.pchangeinOpenInterest,
+    totalTradedVolume: dataA.totalTradedVolume + dataB.totalTradedVolume,
+    change: dataA.change + dataB.change,
+    pChange: dataA.pChange + dataB.pChange,
+    totalBuyQuantity: dataA.totalBuyQuantity + dataB.totalBuyQuantity,
+    totalSellQuantity: dataA.totalSellQuantity + dataB.totalSellQuantity,
   };
 
   return merged;
@@ -215,40 +282,51 @@ export const filterDataOnStrikeRange = (data: DataItem[], minStrike: number, max
   return data.filter((item) => item.strikePrice >= minStrike && item.strikePrice <= maxStrike);
 };
 
-export const combineCurrentAndNextData = (data: ReturnType<typeof formatData>) => {
+export const combineCurrentAndNextData = (data: ReturnType<typeof formatData>, expiries: string[]) => {
+
+  const { grouped } = data;
+
   const mergedAndValuesSummed: DataItem[] = [];
 
   for (const strikePrice of data.strikePrices) {
-    const current = data.current?.data.find((item) => item.strikePrice === strikePrice);
-    const next = data.next?.data.find((item) => item.strikePrice === strikePrice);
-    
-    if (current && next) {
-      const merged = {
-        ...current
+
+    let merged: DataItem | null = null;
+
+    for (let i = 0; i < expiries.length; i++) {
+
+      const currentData = grouped[expiries[i]] || [];
+
+      const current = currentData.find((item) => item.strikePrice === strikePrice);
+
+      if (!merged) {
+        
+        if (current) {
+          merged = {
+            ...current
+          };
+        };
+        continue;
       };
 
-      if (current.CE && next.CE) {
-        merged.CE = mergeAndAddValues(current.CE, next.CE);
+      if (merged && current) {
+
+        if (merged.CE && current.CE) {
+          merged.CE = mergeAndAddValues(merged.CE, current.CE);
+        };
+
+        if (merged.PE && current.PE) {
+          merged.PE = mergeAndAddValues(merged.PE, current.PE);
+        };
+
+        if (!merged.CE && current.CE) {
+          merged.CE = current.CE;
+        };
       };
 
-      if (current.PE && next.PE) {
-        merged.PE = mergeAndAddValues(current.PE, next.PE);
-      };
+    };
 
-      if (!current.CE && next.CE) {
-        merged.CE = next.CE;
-      };
-
+    if (merged) {
       mergedAndValuesSummed.push(merged);
-
-    } else if (current && !next) {
-      mergedAndValuesSummed.push(current);
-
-    } else if (!current && next) {    
-      mergedAndValuesSummed.push(next);
-      
-    } else {
-      return null;
     };
   };
 
@@ -292,6 +370,37 @@ export const getNextTime = (date: Date) => {
   next.setMinutes(nextMinuteMark || 0);
   next.setSeconds(0);
   return getTimeStamp(next);
+};
+
+export const haveExpiriesChanged = (currentExpiries: string[], nextExpiries: string[]) => {
+  if (currentExpiries.length !== nextExpiries.length) {
+    return true;
+  };
+
+  for (let i = 0; i < currentExpiries.length; i++) {
+    if (currentExpiries[i] !== nextExpiries[i]) {
+      return true;
+    };
+  };
+
+  return false;
+};
+
+export const getExpiryDatesHeader = (initialText: string, expiryDates: string[]) => {
+  let header = initialText;
+  
+  for (let i = 0; i < expiryDates.length; i++) {
+    const expiryDate = expiryDates[i].replace(/-/g, " ");
+    if (i < expiryDates.length - 1) {
+      header += i === 0 ? " " : ", ";
+      header += `${expiryDate}`;
+    } else {
+      header += expiryDates.length > 1 ? " & " : " ";
+      header += `${expiryDate} ${expiryDates.length > 1 ? "Expiries" : "Expiry"}`;
+    };
+  };
+
+  return header;
 };
 
 
