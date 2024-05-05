@@ -7,7 +7,7 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 ## Features
 1. Fetches Real-time Open Interest data of Indian Benchmark Indices (NIFTY, BANKNIFTY, FINNIFTY and MIDCPNIFTY) and F&O stocks listed on NSE (185 stocks).
 2. Shows Change in Open Interest and Total Open Interest.
-3. Shows current and next expiry data.
+3. Has a multi expiry selector to see combined Open Interest. With 4 (2 weekly, 2 monthly) selectable expiries for indices and 2 (2 monthly) selectable expiries for stocks.
 4. Has a Strike range selector to adjust the no. of strikes to be shown.
 5. Auto-updates data, using a web worker, precisely at times when the minutes are divisible by 3 (ex: 9:30, 9:33, 9:36,...,9:57, 10:00 etc).
 6. Caches data with RTK Query for a maximum of 3 minutes.
@@ -25,7 +25,8 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 
 ## To be added
 1. FII and DII data visualization.
-2. Option Payoff visualization? Maybe.
+2. Option Chain table.
+3. Option Payoff visualization? Maybe.
 
 ## References
 1. Tried to replicate the UI of https://www.sensibull.com/ app.
