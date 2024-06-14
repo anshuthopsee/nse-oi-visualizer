@@ -12,7 +12,8 @@ const getOptionsWithUserAgent = () => {
       "User-Agent": userAgent.toString(),
       "Connection": "keep-alive",
     },
-    timeout: 6000
+    timeout: 6000,
+    withCredentials: true,
   };
 };
 
@@ -27,6 +28,7 @@ const getOptionChainWithRetry = async (cookie, identifier, retryCount = 0) => {
   try {
     const url = baseURL + apiEndpoint + "?symbol=" + encodeURIComponent(identifier);
     const response = await axios.get(url, { ...options, headers: { ...options.headers, Cookie: cookie } });
+    console.log('Response:', response.cookie);
     return response.data;
   } catch (error) {
     console.error(`Error fetching option chain. Retry count: ${retryCount}`, error);
@@ -43,6 +45,7 @@ const getCookiesWithRetry = async () => {
   try {
     const response = await axios.get(baseURL, options);
     const cookie = response.headers['set-cookie'];
+    console.log(typeof cookie)
     return cookie;
   } catch (error) {
     console.error('Error fetching cookies:');
@@ -64,6 +67,7 @@ app.get('/*', async (req, res) => {
 
   try {
     const cookie = await getCookiesWithRetry();
+    console.log('Cookie:', cookie);
     const data = await getOptionChainWithRetry(cookie, identifier.toUpperCase());
     res.json(data).status(200).end();
   } catch (error) {
