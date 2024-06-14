@@ -26,7 +26,9 @@ export const openInterestApi = createApi({
 
         identifier =  encodeURIComponent(identifier);
 
-        return `/api?identifier=${identifier}`;
+        const url = import.meta.env.MODE === "development" ? "/api/" : import.meta.env.VITE_API_BASE_URL;
+
+        return `${url}?identifier=${identifier}`;
       },
       providesTags: ["OpenInterest"],
       transformResponse: (response: UntransformedData, _meta, args) => {
