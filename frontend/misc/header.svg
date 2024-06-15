@@ -5,6 +5,7 @@
         .header-container {
           display: inline-flex;
           align-items: center;
+          font-family: "Roboto", sans-serif;
         }
 
         .header-container img {
@@ -13,7 +14,7 @@
       </style>
 
       <div class="header-container">
-        <img src="trend-icon.svg" alt="Trend Icon" />
+        <img src="frontend/misc/trend-icon.svg" alt="Trend Icon" />
         <h2>NSE-OI-VISUALIZER</h2>
       </div>
     </div>
