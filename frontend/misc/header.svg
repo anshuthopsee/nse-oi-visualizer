@@ -14,7 +14,7 @@
       </style>
 
       <div class="header-container">
-        <img src="/trend-icon.svg" alt="Trend Icon" />
+        <img src="trend-icon.svg" alt="Trend Icon" />
         <h2>NSE-OI-VISUALIZER</h2>
       </div>
     </div>
