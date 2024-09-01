@@ -2,8 +2,7 @@ import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import themeReducer, { setThemeMode } from "../features/theme/themeSlice";
 import selectedReducer, { setUnderlying } from "../features/selected/selectedSlice";
 import { openInterestApi } from "../app/services/openInterest";
-import drawerReducer from "../features/drawer/drawerSlice";
-import identifiers, { type IdentifiersType as UnderlyingType } from "../identifiers";
+import identifiers, { type Identifier as Underlying } from "../identifiers";
 
 const localStorageMiddleware: Middleware = () => (next) => (action) => {
   const result = next(action);
@@ -25,7 +24,6 @@ const store = configureStore({
   reducer: {
     theme: themeReducer,
     selected: selectedReducer,
-    drawer: drawerReducer,
     [openInterestApi.reducerPath]: openInterestApi.reducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(openInterestApi.middleware, localStorageMiddleware),
@@ -38,8 +36,8 @@ if (themeMode === "light" || themeMode === "dark") {
   store.dispatch(setThemeMode(themeMode));
 };
 
-const isValidUnderlying = (underlying: string | null): underlying is UnderlyingType => {
-  return underlying !== null && (identifiers).includes(underlying as UnderlyingType);
+const isValidUnderlying = (underlying: string | null): underlying is Underlying => {
+  return underlying !== null && (identifiers).includes(underlying as Underlying);
 };
 
 if (isValidUnderlying(underlying)) {

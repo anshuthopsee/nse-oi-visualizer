@@ -20,6 +20,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
+  "include": ["src", "../backend/black76.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

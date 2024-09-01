@@ -1,54 +1,138 @@
+import { useState, useLayoutEffect, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getThemeMode, setThemeMode, type ThemeMode } from '../features/theme/themeSlice';
-import { setDrawerState } from '../features/drawer/drawerSlice';
-import { AppBar, Toolbar, IconButton, Typography } from '@mui/material';
+import useTheme from "@mui/material/styles/useTheme";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import MenuIcon from '@mui/icons-material/Menu';
 import trendIcon from '../assets/trend-icon.svg';
+import ArrorForwardIcon from '@mui/icons-material/ArrowForward';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Drawer from "@mui/material/Drawer";
 import "@fontsource/exo/400.css";
 
 const Header = () => {
   const dispatch = useDispatch();
   const themeMode = useSelector(getThemeMode);
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  const [value, setValue] = useState<number>(0);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const path = location.pathname;
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   const changeThemeMode = (mode: ThemeMode) => {
     dispatch(setThemeMode(mode));
   };
 
+  const renderLogo = () => {
+    return (
+      <>
+        <Typography color="inherit" component="div" sx={{ height: { xs: "30px", sm: "35px" }, width: { xs: "30px", sm: "35px" }, ml: "10px", mr: "5px" }}>
+          <img src={trendIcon} alt="logo" style={{ height: "100%", width: "100%" }}/>
+        </Typography>
+        <Typography variant="h6" color="inherit" component="div" 
+          sx={{ pr: 1, fontWeight: "bold", color: "text.primary", fontFamily: "Exo", fontSize: { xs: "16px", sm: "18px" } }}
+        >
+          nse-oi-visualizer
+        </Typography>
+      </>
+    );
+  };
+
+  const handleChange = (_e: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+
+    if (newValue === 0) {
+      navigate('/open-interest');
+    } else if (newValue === 1) {
+      navigate('/strategy-builder');
+    };
+  };
+
+  useLayoutEffect(() => {
+    if (path === '/open-interest') {
+      setValue(0);
+    } else if (path === '/strategy-builder') {
+      setValue(1);
+    };
+  }, [path]);
+
+  useEffect(() => {
+    if (isLargeScreen) {
+      setDrawerOpen(false);
+    };
+  }, [isLargeScreen]);
+
   return (
     <AppBar position='fixed' elevation={0} sx={{ backgroundColor: "background.paper", borderBottom: 1, borderBottomColor: "divider" }}>
       <Toolbar disableGutters>
-        <div style={{ flexGrow: 1, display: "inline-flex", alignItems: "center" }}>
-          {/* <SignalCellularAltIcon sx={{ color: "#c203fc", ml: 1, fontSize: { xs: "16px", sm: "18px" } }}/> */}
-          <Typography color="inherit" component="div" sx={{ height: { xs: "30px", sm: "35px" }, width: { xs: "30px", sm: "35px" }, ml: "10px", mr: "5px" }}>
-            <img src={trendIcon} alt="logo" style={{ height: "100%", width: "100%" }}/>
-          </Typography>
-          <Typography variant="h6" color="inherit" component="div" 
-            sx={{ pr: 1, fontWeight: "bold", color: "text.primary", fontFamily: "Exo", fontSize: { xs: "16px", sm: "18px" } }}
-          >
-            nse-oi-visualizer
-          </Typography>
+        <div style={{ flexGrow: 1, flexBasis: 0, display: "inline-flex", alignItems: "center" }}>
+          {renderLogo()}
         </div>
-        <IconButton edge="start" color="inherit" aria-label="menu"
-          sx={{ color: "text.primary", mx: 1 }}
-          onClick={() => changeThemeMode(themeMode === "light" ? "dark" : "light")}
-        >
-          {themeMode === "light" ? 
-            <DarkModeIcon/> 
-              : 
-            <LightModeIcon/>
-          }
-        </IconButton>
-        <IconButton
-          size="small"
-          color="inherit"
-          aria-label="menu"
-          onClick={() => dispatch(setDrawerState(true))}
-          sx={{ display: { xs: 'flex', lg: 'none'}, color: "text.primary", mr: 1.5 }}
-        >
-          <MenuIcon />
-        </IconButton>
+        {isLargeScreen && <div style={{ display: "inline-flex", flexGrow: 1, alignItems: "center", justifyContent: "center" }}>
+          <Tabs value={value} onChange={handleChange}>
+            <Tab disableRipple label="Open Interest" sx={{ textTransform: "none", py: 2.9 }} />
+            <Tab disableRipple label="Strategy Builder" sx={{ textTransform: "none", py: 2.9 }} />
+          </Tabs>
+        </div>}
+        <div style={{ display: "inline-flex", flexGrow: 1, flexBasis: 0, alignItems: "center", justifyContent: "flex-end" }}>
+          <IconButton edge="start" color="inherit" aria-label="menu"
+            sx={{ color: "text.primary", mx: 1 }}
+            onClick={() => changeThemeMode(themeMode === "light" ? "dark" : "light")}
+          >
+            {themeMode === "light" ? 
+              <DarkModeIcon/> 
+                : 
+              <LightModeIcon/>
+            }
+          </IconButton>
+          <IconButton
+            size="small"
+            color="inherit"
+            aria-label="menu"
+            onClick={() => setDrawerOpen(true)}
+            sx={{ display: { xs: 'flex', lg: 'none'}, color: "text.primary", mr: 1.5 }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Drawer
+            anchor="right"
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+          >
+            <div style={{ width: "300px" }}>
+              <Box sx={{ display: "inline-flex", height: "65px", width: "100%", justifyContent: "space-between",
+                 alignItems: "center", borderBottom: 1, borderColor: "divider" }}>
+                {renderLogo()}
+                <IconButton
+                  size="small"
+                  color="inherit"
+                  onClick={() => setDrawerOpen(false)}
+                  sx={{ display: { xs: 'flex', lg: 'none'}, color: "text.primary", mr: 1.5 }}
+                >
+                  <ArrorForwardIcon />
+                </IconButton>
+              </Box>
+              <Tabs 
+                value={value} onChange={handleChange} orientation="vertical" variant="scrollable" sx={{ mt: 2 }}
+                TabIndicatorProps={{ sx: { left: 0, width: "5px" } }}
+              >
+                <Tab disableRipple label="Open Interest" sx={{ textTransform: "none", py: 2.9 }} />
+                <Tab disableRipple label="Strategy Builder" sx={{ textTransform: "none", py: 2.9 }} />
+              </Tabs>
+            </div>
+          </Drawer>
+        </div>
       </Toolbar>
     </AppBar>
   );
