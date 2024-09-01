@@ -1,6 +1,7 @@
 import express from 'express';
 import axios from 'axios';
 import UserAgent from 'user-agents';
+import { formatData, getPayoffData } from './utils.js';
 
 const baseURL = 'https://www.nseindia.com/';
 
@@ -18,6 +19,8 @@ const getOptionsWithUserAgent = () => {
 };
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 const MAX_RETRY_COUNT = 3;
 
@@ -28,7 +31,11 @@ const getOptionChainWithRetry = async (cookie, identifier, retryCount = 0) => {
   try {
     const url = baseURL + apiEndpoint + "?symbol=" + encodeURIComponent(identifier);
     const response = await axios.get(url, { ...options, headers: { ...options.headers, Cookie: cookie } });
-    return response.data;
+    const formattedData = formatData(response.data, identifier);
+    return formattedData;
+
+  // DETERMINE ITM AND OTM OPTIONS AND ONLY CALCULATE IMPLIED VOL FOR THOSE
+
   } catch (error) {
     console.error(`Error fetching option chain. Retry count: ${retryCount}`, error);
     if (retryCount < MAX_RETRY_COUNT) {
@@ -51,7 +58,7 @@ const getCookies = async () => {
   };
 };
 
-app.get('/*', async (req, res) => {
+app.get('/', async (req, res) => {
   const now = new Date();
   const time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
   console.log(`Request received at ${time}`);
@@ -71,6 +78,19 @@ app.get('/*', async (req, res) => {
     console.error('Proxy request error: here', error);
     res.status(500).json({ error: 'Proxy request failed.' });
   };
+});
+
+app.post('/builder', async (req, res) => {
+
+  const builderData = req.body;
+
+  // if (!optionLegs || optionLegs.length === 0) {
+  //   res.status(500).json({ error: 'No option legs provides.' });
+  // };
+
+  const payoff = getPayoffData(builderData);
+  res.json(payoff).status(200).end();
+
 });
 
 app.listen(6123, () => {

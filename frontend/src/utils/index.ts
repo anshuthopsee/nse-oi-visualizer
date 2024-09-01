@@ -1,7 +1,7 @@
-import { IdentifiersType as Underlying } from "../identifiers";
-import { StrikeDistancesFromATM, Data, DataItem,ContractData } from "../features/selected/types";
+import { Identifier as Underlying } from "../identifiers";
+import { type StrikeDistancesFromATM, type DataItem, type ContractData, type TransformedData } from "../features/selected/types";
 
-const formatDate = (date: Date): string => {
+export const formatDate = (date: Date): string => {
   const months: string[] = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
@@ -14,7 +14,7 @@ const formatDate = (date: Date): string => {
   return `${day}-${monthAbbreviation}-${year}`;
 };
 
-const parseDate = (dateStr: string) => {
+export const parseDate = (dateStr: string) => {
   const [day, monthAbbr, year] = dateStr.split("-");
   const monthNames: { [key: string]: number } = {
     Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
@@ -22,95 +22,6 @@ const parseDate = (dateStr: string) => {
   };
   const month = monthNames[monthAbbr];
   return new Date(Number(year), month, Number(day));
-};
-
-const mergeTwoArrays = (arr1: number[], arr2: number[]) => {
-  return [...new Set([...arr1, ...arr2])].sort((a, b) => a - b);
-};
-
-const getFilteredExpiries = (params: { 
-  expiryDates: string[],
-  isIndex: boolean }) => {
-
-  const { expiryDates, isIndex } = params;
-  const parsedDates = expiryDates.map(parseDate);
-
-  if (!isIndex) {
-    const [currentDate, nextDate] = parsedDates;
-    const [formattedCurrentDate, formattedNextDate] = [
-      formatDate(currentDate), 
-      formatDate(nextDate)
-    ];
-
-    return [formattedCurrentDate, formattedNextDate];
-
-  } else {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    let monthExpiryCount = 0;
-
-    const filteredExpiries: string[] = [];
-
-    for (let i = 1; i < parsedDates.length; i++) {
-      const date = parsedDates[i - 1];
-      const nextDate = parsedDates[i];
-      const formattedDate = formatDate(date);
-
-      if (i <= 2) {
-        filteredExpiries.push(formattedDate);
-        continue;
-      };
-
-      if (date >= today &&
-          date.getMonth() !== nextDate.getMonth()
-      ) {
-        if (monthExpiryCount === 2) {
-          break;
-        };
-
-        filteredExpiries.push(formattedDate);
-        monthExpiryCount++;
-      };
-    };
-
-    return filteredExpiries;
-  };
-};
-
-const formatData = (data: Data, underlying: Underlying) => {
-  const records = data.records;
-  const groupedData = records.data.reduce((group, item) => {
-    const { expiryDate } = item;
-    group[expiryDate] = group[expiryDate] || [];
-    group[expiryDate].push(item);
-    return group;
-  }, {} as { [key: string]: DataItem[] });
-
-  const indices = ["NIFTY", "BANKNIFTY", "FINNIFTY", "MIDCPNIFTY"];
-
-  const isIndex = indices.some((index) => underlying.startsWith(index));
-
-  const filteredExpiries = getFilteredExpiries({
-    expiryDates: records.expiryDates,
-    isIndex
-  });
-
-  let mergedStrikePrices: number[] = [];
-
-  for (const expiryDate of filteredExpiries) {
-    const strikePrices = groupedData[expiryDate].map((item) => item.strikePrice);
-    mergedStrikePrices = mergeTwoArrays(mergedStrikePrices, strikePrices);
-  };
-
-  return {
-    underlying,
-    grouped: groupedData,
-    filteredExpiries,
-    allExpiries: records.expiryDates,
-    strikePrices: mergedStrikePrices,
-    underlyingValue: records.underlyingValue,
-  };
 };
 
 export const getNearestStrikePrice = (strikePrices: number[], underlyingValue: number) => {
@@ -174,7 +85,7 @@ export const filterDataOnStrikeRange = (data: DataItem[], minStrike: number, max
   return data.filter((item) => item.strikePrice >= minStrike && item.strikePrice <= maxStrike);
 };
 
-export const combineSelectedExpiriesData = (data: ReturnType<typeof formatData>, expiries: string[]) => {
+export const combineSelectedExpiriesData = (data: TransformedData, expiries: string[]) => {
 
   const { grouped } = data;
 
@@ -186,7 +97,7 @@ export const combineSelectedExpiriesData = (data: ReturnType<typeof formatData>,
 
     for (let i = 0; i < expiries.length; i++) {
 
-      const currentData = grouped[expiries[i]] || [];
+      const currentData = grouped[expiries[i]]?.data || [];
 
       const current = currentData.find((item) => item.strikePrice === strikePrice);
 
@@ -295,5 +206,119 @@ export const getExpiryDatesHeader = (initialText: string, expiryDates: string[])
   return header;
 };
 
+type OptionLeg = {
+  active: boolean;
+  action: "B" | "S";
+  expiry: string;
+  strike: number;
+  type: "CE" | "PE";
+  lots: number;
+  price: number | null;
+  iv: number | null;
+};
 
-export default formatData;
+type ModifyOptionLegsPayload = {
+  type: "add";
+  optionLegs: OptionLeg[] | null;
+  newOptionLeg: OptionLeg;
+} | {
+  type: "replace";
+  optionLegs: OptionLeg[] | null;
+  newOptionLeg: OptionLeg;
+  optionLegIndex: number;
+} | {
+  type: "delete";
+  optionLegs: OptionLeg[] | null;
+  optionLegIndex: number;
+};
+
+export const modifyOptionLegs = (payload: ModifyOptionLegsPayload) => {
+
+  if (payload.type === "add") {
+    const { optionLegs, newOptionLeg } = payload;
+
+    if (!optionLegs || optionLegs.length === 0) {
+      return [newOptionLeg];
+    };
+
+    return [...optionLegs, newOptionLeg];
+  } else if (payload.type === "replace") {
+    const { optionLegs, newOptionLeg, optionLegIndex } = payload;
+
+    if (!optionLegs || optionLegs.length === 0) {
+      return [newOptionLeg];
+    };
+
+    const modifiedOptionLegs = [...optionLegs];
+    modifiedOptionLegs[optionLegIndex] = newOptionLeg;
+    return modifiedOptionLegs;
+  } else if (payload.type === "delete") {
+    const { optionLegs, optionLegIndex } = payload;
+
+    if (!optionLegs || optionLegs.length === 0) {
+      return [];
+    };
+
+    const modifiedOptionLegs = [...optionLegs];
+    modifiedOptionLegs.splice(optionLegIndex, 1);
+    return modifiedOptionLegs;
+  } else {
+    return [];
+  };
+};
+
+const getNextWeekdayDate = (date: Date) => {
+  const day = date.getDay();
+  let add = 1;
+  if (day === 6) {
+    add = 2 
+  } else if (day === 5) {
+    add = 3;
+  }
+  date.setDate(date.getDate() + add);
+  return date;
+};
+
+export const getIST = () => {
+  const currentTime = new Date();
+  const currentOffset = currentTime.getTimezoneOffset();
+  const ISTOffset = 330;   // IST offset UTC +5:30 
+  const ISTTime = new Date(currentTime.getTime() + (ISTOffset + currentOffset) * 60000);
+  return ISTTime;
+};
+
+export const getExpiryDateTime = (expiryDate: string) => {
+  const expiryDateTime = new Date(expiryDate);
+  expiryDateTime.setHours(15, 30, 0, 0);
+  return expiryDateTime;
+};
+
+export const getTargetDateTime = () => {
+  const dateTimeIST = getIST();
+  const marketOpen = new Date(dateTimeIST);
+  marketOpen.setHours(9, 15, 0, 0);
+  const marketClose = new Date(dateTimeIST);
+  marketClose.setHours(15, 30, 0, 0);
+  const nextWeekday = getNextWeekdayDate(new Date(dateTimeIST));
+  nextWeekday.setHours(9, 15, 0, 0);
+  
+  if (dateTimeIST.getDay() === 6 
+  || dateTimeIST.getDay() === 0) {
+    return nextWeekday;
+  };
+
+  if (dateTimeIST > marketClose) {
+    return marketClose;
+  };
+
+  if (dateTimeIST < marketOpen) {
+    return marketOpen;
+  };
+
+  return dateTimeIST;
+};
+
+export const getUnderlyingType = (underlying: Underlying) => {
+  return underlying === "NIFTY" || underlying === "BANKNIFTY"
+  || underlying === "FINNIFTY" || underlying === "MIDCPNIFTY";
+};

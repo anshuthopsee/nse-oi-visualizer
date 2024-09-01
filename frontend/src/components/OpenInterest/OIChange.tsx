@@ -1,6 +1,5 @@
 import { useMemo } from "react";
-import { type TransformedData } from "../../app/services/openInterest";
-import { type Expiries, StrikeRange } from "../../features/selected/types";
+import { type Expiry, type StrikeRange, type TransformedData } from "../../features/selected/types";
 import { combineSelectedExpiriesData, filterDataOnStrikeRange, getExpiryDatesHeader } from "../../utils";
 import OIChangeDataBox from "./OIChangeDataBox";
 import { Box, Typography } from "@mui/material";
@@ -8,7 +7,7 @@ import OIChart from "../Chart/OIChart";
 
 type OIChangeProps = {
   data: TransformedData | null;
-  expiries: Expiries;
+  expiries: Expiry[];
   strikeRange: StrikeRange;
   isFetching: boolean;
   isError: boolean;

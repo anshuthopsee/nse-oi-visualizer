@@ -3,8 +3,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import SelectIndices from "./SelectIndices";
 import identifiers from "../../identifiers";
 import { useDispatch, useSelector } from "react-redux";
-import { getUnderlying, setUnderlying } from "../../features/selected/selectedSlice";
-import { type IdentifiersType as UnderlyingType } from "../../identifiers";
+import { getUnderlying, setUnderlying, setSBOptionLegs } from "../../features/selected/selectedSlice";
+import { type Identifier as Underlying } from "../../identifiers";
 
 
 const SelectUnderlying = () => {
@@ -12,8 +12,12 @@ const SelectUnderlying = () => {
   const underlying = useSelector(getUnderlying);
 
 
-  const handleChange = (selected: UnderlyingType) => {
+  const handleChange = (selected: Underlying) => {
     dispatch(setUnderlying(selected));
+    dispatch(setSBOptionLegs({
+      type: "set",
+      optionLegs: []
+    }));
   };
 
   return (

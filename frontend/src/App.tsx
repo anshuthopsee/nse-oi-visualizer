@@ -1,27 +1,22 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from './components/Layout';
 import OpenInterest from './components/OpenInterest';
+import StrategyBuilder from "./components/StrategyBuilder";
+import ToastContextProvider from "./contexts/ToastContextProvider";
+import Toast from "./components/Toast";
 
 function App() {
-
-  // const fetchData = async () => {
-  //   const response = await fetch('http://localhost:8001/');
-  //   const data = await response.json();
-  //   console.log(data);
-  // };
-  
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-
   return (
-    <>
+    <ToastContextProvider>
+      <Toast />
       <Routes>
         <Route path="/*" element={<Layout />}>
-          <Route path="*" element={<OpenInterest />} />
+          <Route index element={<Navigate to="/open-interest" />} />
+          <Route path="open-interest" element={<OpenInterest />} />
+          <Route path="strategy-builder" element={<StrategyBuilder />} />
         </Route>
       </Routes>
-    </>
+    </ToastContextProvider>
   );
 };
 
