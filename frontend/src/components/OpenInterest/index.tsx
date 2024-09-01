@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useState } from "react";
 import useTheme from "@mui/material/styles/useTheme";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,13 +6,14 @@ import { useOpenInterestQuery, openInterestApi } from "../../app/services/openIn
 import { type AppDispatch } from "../../store";
 import { getUnderlying, getExpiries, setExpiries, getStrikeRange, getStrikeDistanceFromATM, 
   setMinMaxStrike, setNextUpdateAt } from "../../features/selected/selectedSlice";
-import { getMinAndMaxStrikePrice, getNextTime, haveExpiriesChanged } from "../../utils";
-import { getDrawerState, setDrawerState } from "../../features/drawer/drawerSlice";
-import { Grid, Box, Drawer, IconButton } from "@mui/material";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { getMinAndMaxStrikePrice, getNextTime } from "../../utils";
+import useDeepMemo from "../../hooks/useDeepMemo";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
 import Menu from "./Menu";
 import OIChange from "./OIChange";
 import OITotal from "./OITotal";
+import FloatingDrawer from "../FloatingDrawer";
 
 const OpenInterest = () => {
   const viewportTheme = useTheme();
@@ -22,36 +23,33 @@ const OpenInterest = () => {
   const expiries = useSelector(getExpiries);
   const strikeRange = useSelector(getStrikeRange);
   const strikeDistanceFromATM = useSelector(getStrikeDistanceFromATM);
-  const drawerState = useSelector(getDrawerState);
   const { data, isFetching, isError } = useOpenInterestQuery({ underlying: underlying });
+  const filteredExpiries = useDeepMemo(data?.filteredExpiries);
+  const allExpiries = useDeepMemo(data?.allExpiries);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (isLargeScreen) {
-      dispatch(setDrawerState(false));
+      setDrawerOpen(false);
     };
   }, [isLargeScreen]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (data) {
-
       const { strikePrices, underlyingValue } = data;
       
       if (strikeDistanceFromATM === null) return;
-
       const { minStrike, maxStrike } = getMinAndMaxStrikePrice(
         strikePrices, 
         underlyingValue, 
         strikeDistanceFromATM
       );
-
       dispatch(setMinMaxStrike({ min: minStrike, max: maxStrike }));
     };
-
   }, [data, strikeDistanceFromATM]);
 
-  useLayoutEffect(() => {
-    if (data && data.underlying) {
-      const { filteredExpiries } = data;
+  useEffect(() => {
+    if (allExpiries && filteredExpiries) {
       const updatedExpiries = filteredExpiries.map((expiry, i) => {
         return {
           date: expiry,
@@ -60,34 +58,11 @@ const OpenInterest = () => {
       });
       dispatch(setExpiries(updatedExpiries));
     };
-  }, [data?.underlying]);
+  }, [allExpiries, filteredExpiries]);
 
-  useLayoutEffect(() => {
-    if (data) {
-      const { filteredExpiries } = data;
-
-      if (!isFetching && !isError) {
-
-        if (haveExpiriesChanged((expiries || []).map((expiry) => expiry.date), filteredExpiries)) {
-          
-          const updatedExpiries = filteredExpiries.map((expiry, i) => {
-            return {
-              date: expiry,
-              chosen: i < 2
-            }
-          });
-  
-          dispatch(setExpiries(updatedExpiries));
-        };
-      };
-    };
-  }, [data, isFetching, isError]);
-
-  useLayoutEffect(() => {
-    const IntervalWorker: Worker = new Worker(new URL("./worker/IntervalWorker.ts", import.meta.url));
-
+  useEffect(() => {
+    const IntervalWorker: Worker = new Worker(new URL("../../worker/IntervalWorker.ts", import.meta.url));
     IntervalWorker.postMessage({ action: "start" });
-
     IntervalWorker.onmessage = (e: MessageEvent) => {
       if (e.data === "get-oi") {
         console.log("getting oi data");
@@ -102,13 +77,12 @@ const OpenInterest = () => {
 
   }, [underlying]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!isFetching && !isError) {
       const now = new Date();
       const nextTime = getNextTime(now);
       dispatch(setNextUpdateAt(nextTime));
     };
-
   }, [isFetching, isError]);
 
   return (
@@ -125,14 +99,14 @@ const OpenInterest = () => {
           <Box sx={{ display: "flex", flexDirection: "column", rowGap: "15px", pb: "160px", position: "relative", top: { xs: "55px", sm: "65px" } }}>
             <OIChange 
               data={data || null}
-              expiries={expiries}
+              expiries={expiries || []}
               strikeRange={strikeRange}
               isFetching={isFetching}
               isError={isError}
             />
             <OITotal 
               data={data || null}
-              expiries={expiries}
+              expiries={expiries || []}
               strikeRange={strikeRange}
               isFetching={isFetching}
               isError={isError}
@@ -140,28 +114,15 @@ const OpenInterest = () => {
           </Box>
         </Grid>
       </Grid>
-      <Drawer
-        anchor={"left"}
-        open={drawerState}
-        PaperProps={{
-          sx: { maxWidth: {xs: "100%", md: "400px"} },
-        }}
-        onClose={() => dispatch(setDrawerState(false))}
-      >
-        <Box sx={{ height: "100dvh", display: "flex", rowGap: "10px", 
-          flexDirection: "column", overflow: "auto", px: "10px", py: "10px", 
-          position: "relative", minWidth: "330px" }}
+      <div style={{ top: "100px", position: "absolute", left: 0, width: "100%" }}>
+        <FloatingDrawer
+          showButton={!isLargeScreen} 
+          open={drawerOpen} 
+          onChange={setDrawerOpen}
         >
-          <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
-            <IconButton onClick={() => dispatch(setDrawerState(false))}>
-              <ArrowBackIcon />
-            </IconButton>
-          </Box>
-          <Box sx={{ pb: "10px" }}>
-            <Menu/>
-          </Box>
-        </Box>
-      </Drawer>
+          <Menu />
+        </FloatingDrawer>
+      </div>
     </>
   );
 };

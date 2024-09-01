@@ -6,7 +6,7 @@ import useChartDimensions from "../../hooks/useChartDimensions";
 import BarGroup from "./BarGroup";
 import XAxis from "./XAxis";
 import YAxis from "./YAxis";
-import LoadingOverlay from "./LoadingOverlay";
+import LoadingOverlay from "../LoadingOverlay";
 import Tooltip from "./Tooltip";
 
 export const bisectDate = (data: number[], x0: number) => {
@@ -208,7 +208,7 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
 
   return (
     <div ref={chartContainerRef} style={{ width: "100%", height: "100%", display: "flex", position: "relative" }}>
-      <LoadingOverlay isFetching={isFetching} isError={isError} />
+      {isFetching && <LoadingOverlay isError={isError} />}
       <svg width={width} height={height}>
         <g transform={`translate(${[
           marginLeft,

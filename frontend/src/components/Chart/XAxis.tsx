@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { ScaleBand, ScaleLinear } from "d3";
+import { type ScaleBand, type ScaleLinear } from "d3";
 import { getNearestStrikePrice } from "../../utils";
 
 type XAxisProps = {

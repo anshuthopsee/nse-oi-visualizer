@@ -1,20 +1,29 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import formatData from "../../utils";
-import { type Data as UntransformedData } from "../../features/selected/types";
-import { type IdentifiersType as Underlying } from "../../identifiers";
+import { type TransformedData, type ATMIVsPerExpiry, type FuturesPerExpiry, type ActiveOptionLeg, type BuilderData } from "../../features/selected/types";
+// import { type Data as UntransformedData } from "../../features/selected/types";
+import { type Identifier as Underlying } from "../../identifiers";
 
-type OpenInterestRequestArgs = {
+type OpenInterestRequestParams = {
   underlying: Underlying;
 };
 
-export type TransformedData = ReturnType<typeof formatData>;
+type BuilderRequestParams = {
+  underlyingPrice: number | null;
+  targetUnderlyingPrice: number | null;
+  targetDateTimeISOString: string;
+  atmIVsPerExpiry: ATMIVsPerExpiry | null;
+  futuresPerExpiry: FuturesPerExpiry | null;
+  optionLegs: ActiveOptionLeg[];
+  lotSize: number | null;
+  isIndex: boolean;
+};
 
 export const openInterestApi = createApi({
   reducerPath: "openInterestApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/" }),
   tagTypes: ["OpenInterest"],
   endpoints: (builder) => ({
-    openInterest: builder.query<TransformedData, OpenInterestRequestArgs>({
+    openInterest: builder.query<TransformedData, OpenInterestRequestParams>({
       query: ({ underlying }) => {
         let identifier: string = underlying;
 
@@ -31,12 +40,22 @@ export const openInterestApi = createApi({
         return `${url}?identifier=${identifier}`;
       },
       providesTags: ["OpenInterest"],
-      transformResponse: (response: UntransformedData, _meta, args) => {
-        return formatData(response, args.underlying);
-      },
       keepUnusedDataFor: 200,
     }),
+    builder: builder.query<BuilderData, BuilderRequestParams>({
+      query: (strategyBuilderData) => {
+        
+        const url = (import.meta.env.MODE === "development" ? "/api/" : import.meta.env.VITE_API_BASE_URL) + "builder"
+        
+        return {
+          url: url,
+          method: "POST",
+          body: strategyBuilderData
+        }
+      },
+      keepUnusedDataFor: 0
+    })
   }),
 });
 
-export const { useOpenInterestQuery } = openInterestApi;
+export const { useOpenInterestQuery, useBuilderQuery } = openInterestApi;

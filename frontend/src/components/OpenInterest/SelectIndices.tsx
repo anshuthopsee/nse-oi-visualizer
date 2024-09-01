@@ -1,7 +1,7 @@
 import { type ReactNode } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Box, Button, Typography } from "@mui/material";
-import { getUnderlying, setUnderlying } from "../../features/selected/selectedSlice";
+import { getUnderlying, setUnderlying, setSBOptionLegs } from "../../features/selected/selectedSlice";
 
 const benchmarkIndices = ["NIFTY", "BANKNIFTY", "MIDCPNIFTY", "FINNIFTY"] as const;
 
@@ -30,6 +30,10 @@ const SelectIndices = () => {
 
   const handleClick = (selected: typeof benchmarkIndices[number]) => {
     dispatch(setUnderlying(selected));
+    dispatch(setSBOptionLegs({
+      type: "set",
+      optionLegs: []
+    }));
   };
 
   return (
