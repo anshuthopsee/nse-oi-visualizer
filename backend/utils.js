@@ -184,13 +184,16 @@ export const getIVAndGreeks = ({ futuresPrice, timeToExpiry, riskFreeRate = 0, c
   let pe = strikePrice > futuresPrice ? 
   [null, 1, null, null, null] : [null, null, null, null, null];
 
-  if (timeToExpiry > 0) {
+  if (timeToExpiry > 0.000001902) {
     const type = strikePrice > futuresPrice ? "c" : "p";
-    const cp = futuresPrice ? strikePrice > futuresPrice ? item.CE ? item.CE.lastPrice : null :
-    item.PE ? item.PE.lastPrice : null : null;
-    iv = cp ? euroImpliedVol76(type, futuresPrice, strikePrice, timeToExpiry, riskFreeRate, cp) : null;
+    const cp = futuresPrice ? strikePrice > futuresPrice ? item.CE ? item.CE.lastPrice : 0 :
+    item.PE ? item.PE.lastPrice : 0 : 0;
+    iv = cp !== null ? euroImpliedVol76(type, futuresPrice, strikePrice, timeToExpiry, riskFreeRate, cp) : null;
     ce = iv ? gbs("c", futuresPrice, strikePrice, timeToExpiry, riskFreeRate, costOfCarry, iv) : null;
     pe = iv ? gbs("p", futuresPrice, strikePrice, timeToExpiry, riskFreeRate, costOfCarry, iv) : null;
+    if (iv === null) {
+      console.log(type, futuresPrice, strikePrice, timeToExpiry, riskFreeRate, costOfCarry, cp);
+    }
   };
 
   const daysInYear = new Date().getFullYear() % 4 === 0 ? 366 : 365;

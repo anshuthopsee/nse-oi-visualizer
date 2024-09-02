@@ -30,11 +30,10 @@ const getOptionChainWithRetry = async (cookie, identifier, retryCount = 0) => {
   const options = getOptionsWithUserAgent();
   try {
     const url = baseURL + apiEndpoint + "?symbol=" + encodeURIComponent(identifier);
+    console.log(url);
     const response = await axios.get(url, { ...options, headers: { ...options.headers, Cookie: cookie } });
     const formattedData = formatData(response.data, identifier);
     return formattedData;
-
-  // DETERMINE ITM AND OTM OPTIONS AND ONLY CALCULATE IMPLIED VOL FOR THOSE
 
   } catch (error) {
     console.error(`Error fetching option chain. Retry count: ${retryCount}`, error);
@@ -83,10 +82,6 @@ app.get('/', async (req, res) => {
 app.post('/builder', async (req, res) => {
 
   const builderData = req.body;
-
-  // if (!optionLegs || optionLegs.length === 0) {
-  //   res.status(500).json({ error: 'No option legs provides.' });
-  // };
 
   const payoff = getPayoffData(builderData);
   res.json(payoff).status(200).end();

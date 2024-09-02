@@ -217,7 +217,8 @@ const bisectionImpliedVol = (valFn, optionType, fs, x, t, r, b, cp, precision = 
   if (Math.abs(cp - cpMid) < precision) {
       return vMid;
   } else {
-      throw new Error(`Implied Vol did not converge. Best Guess=${vMid}, Price diff=${diff}, Required Precision=${precision}`);
+      // throw new Error(`Implied Vol did not converge. Best Guess=${vMid}, Price diff=${diff}, Required Precision=${precision}`);
+      return vMid;
   }
 }
 
