@@ -96,6 +96,24 @@ const PNLChart = ({ payoffsAtTarget, payoffsAtExpiry, underlyingPrice, targetUnd
     />
   }, [yScale]);
 
+  const pnlAtTargetLine = useMemo(() => {
+    return <PNLAtTargetLine
+      xScale={xScale}
+      yScale={yScale}
+      boundedHeight={boundedHeight}
+      payoffsAtTarget={payoffsAtTarget}
+    />
+  }, [xScale, yScale, boundedHeight, payoffsAtTarget]);
+
+  const pnlAtExpiryLine = useMemo(() => {
+    return <PNLAtExpiryLine
+      xScale={xScale}
+      yScale={yScale}
+      boundedHeight={boundedHeight}
+      payoffsAtExpiry={payoffsAtExpiry}
+    />
+  }, [xScale, yScale, boundedHeight, payoffsAtExpiry]);
+
   const handleMouseMove = (e: React.MouseEvent<SVGRectElement, MouseEvent>) => {
     const [x, _y] = d3.pointers(e)[0];
     const bisect = bisector((d: PayoffAt) => d.at).left;
@@ -135,18 +153,8 @@ const PNLChart = ({ payoffsAtTarget, payoffsAtExpiry, underlyingPrice, targetUnd
         ].join(",")})`}
         >
           {yAxis}
-          <PNLAtTargetLine 
-            xScale={xScale} 
-            yScale={yScale} 
-            boundedHeight={boundedHeight} 
-            payoffsAtTarget={payoffsAtTarget} 
-          />
-          <PNLAtExpiryLine 
-            xScale={xScale} 
-            yScale={yScale} 
-            boundedHeight={boundedHeight} 
-            payoffsAtExpiry={payoffsAtExpiry}
-          />
+          {pnlAtTargetLine}
+          {pnlAtExpiryLine}
           {xAxis}
           <Crosshair 
             show={!!tooltipState} 

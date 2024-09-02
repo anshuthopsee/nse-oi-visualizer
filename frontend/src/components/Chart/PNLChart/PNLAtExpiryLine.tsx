@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, Fragment } from "react";
 import * as d3 from "d3";
 import { type ScaleLinear } from "d3";
 import { PayoffAt } from "../../../features/selected/types";
@@ -18,34 +18,29 @@ const Line = ({ xScale, yScale, payoffsAtExpiry }: PNLAtExpiryLineProps) => {
       .y((d) => yScale(d.payoff));
   }, [xScale, yScale, payoffsAtExpiry]);
 
-  const positiveArea = useMemo(() => {
+  const area = useMemo(() => {
     return d3.area<PayoffAt>()
-      .x((d) => xScale(d.at))
-      .y0((_d, _i, data) => yScale(Math.max(d3.min(data, d => d.payoff) || 0, 0)))
-      .y1(d => Math.max(yScale(d.payoff), 0))
+      .x(d => xScale(d.at))
+      .y0(yScale(0))
+      .y1(d => yScale(d.payoff));
   }, [xScale, yScale, payoffsAtExpiry]);
 
-  const negativeArea = useMemo(() => {
-    return d3.area<PayoffAt>()
-      .x((d) => xScale(d.at))
-      .y0((_d, _i, data) => yScale(Math.min(d3.max(data, (d) => d.payoff) || 0, 0)))
-      .y1((d) => yScale(d.payoff))
-  }, [xScale, yScale, payoffsAtExpiry]);
+  let positivePayoffLines: PayoffAt[][] = []
+  let negativePayoffLines: PayoffAt[][] = [];
 
-  let positivePayoff: PayoffAt[] = [];
-  let negativePayoff: PayoffAt[] = [];
+  let positivePayoffLine: PayoffAt[] = [];
+  let negativePayoffLine: PayoffAt[] = [];
 
   payoffsAtExpiry.forEach((payoff, i) => {
     const nextPayoff = payoffsAtExpiry[i + 1];
 
     if (payoff.payoff > 0) {
-      positivePayoff.push(payoff);
+      positivePayoffLine.push(payoff);
     } else if (payoff.payoff < 0) {
-      negativePayoff.push(payoff);
+      negativePayoffLine.push(payoff);
     };
 
     if (nextPayoff) {
-
       const linearScale = d3.scaleLinear()
           .domain([nextPayoff.payoff, payoff.payoff])
           .range([nextPayoff.at, payoff.at]);
@@ -58,39 +53,53 @@ const Line = ({ xScale, yScale, payoffsAtExpiry }: PNLAtExpiryLineProps) => {
         };
 
       if (payoff.payoff >= 0 && nextPayoff.payoff <= 0) {
-        positivePayoff.push(zeroPayoffPoint);
-        negativePayoff.push(zeroPayoffPoint);
+        positivePayoffLine.push(zeroPayoffPoint);
+        negativePayoffLine.push(zeroPayoffPoint);
+        positivePayoffLines.push(positivePayoffLine);
+        negativePayoffLines.push(negativePayoffLine);
+        positivePayoffLine = [];
       } else if (payoff.payoff <= 0 && nextPayoff.payoff >= 0) {
-        positivePayoff.push(zeroPayoffPoint);
-        negativePayoff.push(zeroPayoffPoint);
+        positivePayoffLine.push(zeroPayoffPoint);
+        negativePayoffLine.push(zeroPayoffPoint);
+        positivePayoffLines.push(positivePayoffLine);
+        negativePayoffLines.push(negativePayoffLine);
+        negativePayoffLine = [];
       };
     };
   });
 
   return (
     <g>
-      <path
-        d={line(positivePayoff) || ""}
-        fill="none"
-        stroke={"#3ede59"}
-        strokeWidth={1}
-      />
-      <path
-        d={line(negativePayoff) || ""}
-        fill="none"
-        stroke={"#de2150"}
-        strokeWidth={1}
-      />
-      <path
-        d={positiveArea(positivePayoff) || ""}
-        fill={"#3ede59"}
-        opacity={0.2}
-      />
-      <path
-        d={negativeArea(negativePayoff) || ""}
-        fill={"#de2150"}
-        opacity={0.2}
-      />
+      {positivePayoffLines.map((payoff, i) => (
+        <Fragment key={i}>
+          <path
+            d={line(payoff) || ""}
+            fill={"none"}
+            stroke={"#3ede59"}
+            strokeWidth={2}
+          />
+          <path
+            d={area(payoff) || ""}
+            fill={"#3ede59"}
+            opacity={0.2}
+          />
+        </Fragment>
+      ))}
+      {negativePayoffLines.map((payoff, i) => (
+        <Fragment key={i}>
+        <path
+          d={line(payoff) || ""}
+          fill={"none"}
+          stroke={"#de2150"}
+          strokeWidth={2}
+        />
+        <path
+          d={area(payoff) || ""}
+          fill={"#de2150"}
+          opacity={0.2}
+        />
+      </Fragment>
+      ))}
     </g>
   );
 };

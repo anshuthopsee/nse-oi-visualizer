@@ -52,6 +52,7 @@ const XAxis = ({
         x2={range[1]}
         y2={-boundedHeight + yScale(0)}
         stroke="currentColor"
+        opacity={0.2}
         strokeWidth={1.5}
       />
       {ticks.map(({ value, xOffset }) => {
