@@ -12,7 +12,7 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 4. Has a Strike range selector to adjust the no. of strikes to be shown.
 5. Shows Option Strategy Payoff (P&L) at a target date as well as the expiry date for the selected underlying (maximum 10 legs).
 6. Uses Black-76 model to calculate IVs for each strike, and shows OTM option IV for both call and put.
-7. All IVs are calculated based on a synthetic (implied) futures price, computed with put-call parity based on the ATM option for each expiry.
+7. All IVs are calculated based on a synthetic (implied) futures price, computed with put-call parity formula based on the ATM option for each expiry.
 8. Auto-updates data, using a web worker, precisely at times when the minutes are divisible by 3 (ex: 9:30, 9:33, 9:36,...,9:57, 10:00 etc).
 9. Caches data with RTK Query for a maximum of 3 minutes.
 10. Charts have tooltips.
@@ -35,7 +35,7 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 
 ## Note
 1. IV calculation and Option price calculation Black-Scholes code sourced from [dedwards25/Python_Option_Pricing](https://github.com/dedwards25/Python_Option_Pricing)
-2. Minor differences in IVs and as a result in Option Payoffs as compared to Sensibull might be down to differences the fact all the IVs are being calculated on synthetic futures prices, whereas Sensibull uses actual futures prices where available for monthly expiries. Another reason might be due to variations in time to expiry calculations.
+2. Minor differences in IVs and as a result in Option Payoffs as compared to Sensibull might be down to the fact that all the IVs are being calculated on synthetic futures prices, whereas Sensibull uses actual futures prices where available for monthly expiries. Another reason might be due to variations in time to expiry calculations.
 
 ## References
 1. https://www.sensibull.com/ app.
