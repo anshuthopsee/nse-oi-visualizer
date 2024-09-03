@@ -3,8 +3,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import SelectIndices from "./SelectIndices";
 import identifiers from "../../identifiers";
 import { useDispatch, useSelector } from "react-redux";
-import { getUnderlying, setUnderlying, setSBOptionLegs } from "../../features/selected/selectedSlice";
+import { getUnderlying, setUnderlying, setSBOptionLegs, setSBTargetDateTime } from "../../features/selected/selectedSlice";
 import { type Identifier as Underlying } from "../../identifiers";
+import { getTargetDateTime } from "../../utils";
 
 
 const SelectUnderlying = () => {
@@ -18,6 +19,7 @@ const SelectUnderlying = () => {
       type: "set",
       optionLegs: []
     }));
+    dispatch(setSBTargetDateTime(getTargetDateTime().toISOString()));
   };
 
   return (

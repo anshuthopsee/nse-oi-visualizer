@@ -1,7 +1,8 @@
 import { type ReactNode } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Box, Button, Typography } from "@mui/material";
-import { getUnderlying, setUnderlying, setSBOptionLegs } from "../../features/selected/selectedSlice";
+import { getUnderlying, setUnderlying, setSBOptionLegs, setSBTargetDateTime } from "../../features/selected/selectedSlice";
+import { getTargetDateTime } from "../../utils";
 
 const benchmarkIndices = ["NIFTY", "BANKNIFTY", "MIDCPNIFTY", "FINNIFTY"] as const;
 
@@ -34,6 +35,7 @@ const SelectIndices = () => {
       type: "set",
       optionLegs: []
     }));
+    dispatch(setSBTargetDateTime(getTargetDateTime().toISOString()));
   };
 
   return (
