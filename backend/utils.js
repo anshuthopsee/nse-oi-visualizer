@@ -389,7 +389,8 @@ const generatePayoffRange = ({ optionLegs, lotSize, projectedFuturesPrices,
     const { expiry, strike, lots, iv, price, action } = optionLeg;
     
     const projectedFuturePrice = projectedFuturesPrices.get(expiry);
-    const timeToExpiry = convertDaysToYears(getDaysToExpiry(expiry, targetDateTime));
+    let timeToExpiry = convertDaysToYears(getDaysToExpiry(expiry, targetDateTime));
+
     const minExpiryDateTime = getExpiryDateTime(minExpiry);
     const timeToExpiryFromMin = convertDaysToYears(getDaysToExpiry(expiry, minExpiryDateTime));
 
@@ -408,7 +409,7 @@ const generatePayoffRange = ({ optionLegs, lotSize, projectedFuturesPrices,
         step = outerStep;
       };
       
-      const targetF = Math.max(underlyingPrice + priceDiff, 0);
+      const targetF = Math.max(underlyingPrice + priceDiff, 0.01);
       const expiryF = timeToExpiry === 0 ? underlyingPrice : 
       Math.max(underlyingPrice + (priceDiff * (timeToExpiryFromMin / timeToExpiry)), 0);
       const payoffAtTarget = calcPayoff(type, targetF, strike, timeToExpiry, iv, price, lots, lotSize, action);
