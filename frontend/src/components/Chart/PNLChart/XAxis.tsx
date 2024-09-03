@@ -91,7 +91,7 @@ const XAxis = ({
               fontSize: "11px",
               transform: `translateY(${-boundedHeight - 5}px)`
             }}
-          >{`Spot: ${spotPrice}`}</text>
+          >{`Underlying: ${spotPrice}`}</text>
           <line
             y2={-boundedHeight}
             stroke="currentColor"
@@ -110,14 +110,15 @@ const XAxis = ({
             fill="currentColor"
             style={{
               fontSize: "11px",
-              transform: `translateY(${15}px)`
+              transform: `translateY(${15}px)`,
+              fontWeight: "bold"
             }}
           >{`Payoff: ${payoffAtTarget.toFixed(2)}`}</text>
           <line
             y2={-boundedHeight}
             stroke={payoffAtTarget > 0 ? "#3ede59" : "#de2150"}
-            strokeWidth={1}
-            opacity={0.5}
+            strokeWidth={1.5}
+            opacity={1}
           />
         </g>
       )}
