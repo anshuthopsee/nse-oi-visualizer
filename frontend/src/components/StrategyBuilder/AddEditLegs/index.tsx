@@ -50,9 +50,9 @@ const AddEditLegs = ({ rows, expiries, selectedExpiry, onExpiryChange, strikePri
   const maxOI = Math.max(maxCallOI, maxPutOI);
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 0, height: "100dvh", p: 0 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 0, height: "calc(100dvh - 60px)", p: 0 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", columnGap: "10px", 
-        alignItems: "center", px: 1, pb: 1, pt: 1.5,  backgroundColor: "background.default" }}>
+        alignItems: "center", px: 1, pb: 1, pt: 1.5,  backgroundColor: "background.paper" }}>
         <ExpirySelect
           expiry={selectedExpiry}
           onChange={onExpiryChange}
@@ -65,7 +65,7 @@ const AddEditLegs = ({ rows, expiries, selectedExpiry, onExpiryChange, strikePri
           Done
         </Button>
       </Box>
-      <Box sx={{ display: "flex", maxHeight: "calc(100dvh - 75px)" }}>
+      <Box sx={{ display: "flex", maxHeight: "calc(100dvh - 121px)" }}>
         <TableContainer 
           component={Paper}
           sx={{ height: "100%" }}

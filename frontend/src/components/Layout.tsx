@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
 import Header from './Header';
 import { lightTheme, darkTheme } from '../theme';
 
@@ -14,9 +15,11 @@ const Layout = () => {
     <ThemeProvider theme={themeMode === "light" ? lightTheme : darkTheme}>
       <CssBaseline />
       <Header />
-      <Container maxWidth="xl" disableGutters sx={{ height: "calc(100dvh - 70px)" }}>
-        <Outlet />
-      </Container>
+      <Box sx={{ height: "calc(100dvh - 70px)", position: "relative", width: "100%" }}>
+        <Container maxWidth="xl" disableGutters sx={{ position: undefined }}>
+          <Outlet />
+        </Container>
+      </Box>
     </ThemeProvider>
   );
 };

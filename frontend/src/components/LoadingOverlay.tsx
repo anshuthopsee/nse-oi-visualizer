@@ -11,34 +11,9 @@ type LoadingOverlayProps = {
 
 const LoadingOverlay = ({ message, type = "component", isError }: LoadingOverlayProps) => {
 
-  if (type === "page") {
-    return (
-      <Box sx={{ display: "flex", height: "100%", width: "100%", alignItems: "center", justifyContent: "center" }}>
-        <Box sx={{ width: "100%", maxWidth: "300px", height: "fit-content", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-        {isError ? (
-          <>
-            <Typography variant="body1" color="inherit" component="div" sx={{ fontWeight: "normal", m: 1 }}>Failed to fetch data. Refresh the page.</Typography>
-          </>
-        ) : (
-          <>
-            <Typography variant="h6" gutterBottom sx={{ color: "primary.main" }}>
-              {message || "Loading..."}
-            </Typography>
-            <Box sx={{ width: "100%" }}>
-              <LinearProgress />
-            </Box>
-          </>
-        )}
-        </Box>
-      </Box>
-    );
-  };
-  
-  return (
-    <div style={{ position: "absolute", height: "100%", width: "100%", zIndex: 1, display: "flex", justifyContent: "center", alignItems: "center", backdropFilter: "blur(3px)" }}>
-      <Box sx={{ position: "relative", height: "100%", width: "100%", backgroundColor: "background.paper", opacity: 0.7 }}/>
-      <Box sx={{ position: "absolute", height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-        {isError ? (
+  let content = (
+    <>
+      {isError ? (
           <>
             <Typography variant="body1" color="inherit" component="div" sx={{ fontWeight: "normal", m: 1 }}>Failed to fetch data. Refresh the page.</Typography>
           </>
@@ -48,6 +23,35 @@ const LoadingOverlay = ({ message, type = "component", isError }: LoadingOverlay
             <Typography variant="body1" color="inherit" component="div" sx={{ fontWeight: "normal", m: 1 }}>{message || "Fetching data..."}</Typography>
           </>
         )}
+    </>
+  );
+
+  if (type === "page") {
+    content = (
+      <Box sx={{ display: "flex", width: "100%", maxWidth: "300px", flexDirection: "column", alignItems: "center" }}>
+        {isError ? (
+            <>
+              <Typography variant="body1" color="inherit" component="div" sx={{ fontWeight: "normal", m: 1 }}>Failed to fetch data. Refresh the page.</Typography>
+            </>
+          ) : (
+            <>
+              <Typography variant="h6" gutterBottom sx={{ color: "primary.main" }}>
+                {message || "Loading..."}
+              </Typography>
+              <Box sx={{ width: "100%" }}>
+                <LinearProgress />
+              </Box>
+            </>
+          )}
+      </Box> 
+    );
+  };
+  
+  return (
+    <div style={{ position: "absolute", height: "100%", width: "100%", zIndex: 10, display: "flex", justifyContent: "center", alignItems: "center", backdropFilter: "blur(3px)" }}>
+      <Box sx={{ position: "relative", height: "100%", width: "100%", backgroundColor: "background.paper", opacity: 0.7 }}/>
+      <Box sx={{ position: "absolute", height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+        {content}
       </Box>
     </div>
   );

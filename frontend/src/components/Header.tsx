@@ -74,7 +74,8 @@ const Header = () => {
   }, [isLargeScreen]);
 
   return (
-    <AppBar position='fixed' elevation={0} sx={{ backgroundColor: "background.paper", borderBottom: 1, borderBottomColor: "divider" }}>
+    <AppBar position='fixed' elevation={0} sx={{ backgroundColor: "background.paper", 
+      borderBottom: 1, borderBottomColor: "divider", zIndex: (theme) => theme.zIndex.drawer + 2 }}>
       <Toolbar disableGutters>
         <div style={{ flexGrow: 1, flexBasis: 0, display: "inline-flex", alignItems: "center" }}>
           {renderLogo()}

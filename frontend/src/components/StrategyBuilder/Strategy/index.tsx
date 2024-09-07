@@ -209,7 +209,7 @@ const Strategy = () => {
         hideBackdrop
       >
         <Box sx={{ height: "100dvh", display: "flex", rowGap: "10px", flex: 1,
-          flexDirection: "column", overflow: "auto", width: "100%",
+          flexDirection: "column", overflow: "auto", width: "100%", pt: "60px",
           position: "relative" }}
         >
           <AddEditLegs 

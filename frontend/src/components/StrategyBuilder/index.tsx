@@ -1,4 +1,4 @@
-import { type ReactNode, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useOpenInterestQuery } from "../../app/services/openInterest";
 import { getUnderlying } from "../../features/selected/selectedSlice";
@@ -10,7 +10,7 @@ import PNLControls from "./PNLControls";
 import LoadingOverlay from "../LoadingOverlay";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+// import Typography from "@mui/material/Typography";
 import FloatingDrawer from "../FloatingDrawer";
 
 const StrategyBuilder = () => {
@@ -20,25 +20,20 @@ const StrategyBuilder = () => {
   const { isFetching, isError } = useOpenInterestQuery({ underlying: underlying });
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  let content: ReactNode = null;
-
   useEffect(() => {
     if (isLargeScreen) {
       setDrawerOpen(false);
     };
   }, [isLargeScreen]);
 
-  if (isFetching) {
-    content = <LoadingOverlay type="page" message="Fetching prices and IVs" isError={isError} />;
-  } else if (isError) {
-    content = (
-      <Box>
-        <Typography variant="h6" color="error">Error fetching data</Typography>
-      </Box>
-    );
-  } else {
-    content = (
+  return (
+    <Grid container sx={{ flex: 1, height: "100%", width: "100%", p: 2, minHeight: "100vh" }}>
       <>
+        {isFetching && (
+          <Box sx={{ position: "absolute", inset: 0, zIndex: (theme) => theme.zIndex.drawer + 1, height: "100dvh", width: "100%", }}>
+            <LoadingOverlay type="page" isError={isError} message="Fetching IVs and Prices" />
+          </Box>
+        )}
         {isLargeScreen ? (
           <Grid item xs={0} lg={3.7} sx={{ pr: "15px" }}>
             <Box sx={{ height: "calc(100vh - 160px)", width: "100%", position: "sticky", top: "81px" }}>
@@ -65,12 +60,6 @@ const StrategyBuilder = () => {
           </FloatingDrawer>
         </div>
       </>
-    );
-  };
-
-  return (
-    <Grid container sx={{ flex: 1, height: "100%", width: "100%", p: 2, position: "relative", minHeight: "100vh" }}>
-      {content}
     </Grid>
   );
 };
