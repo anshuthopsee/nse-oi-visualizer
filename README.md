@@ -44,4 +44,4 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 4. https://www.nseindia.com/ data source.
 
 ## Site link
-### (https://nse-oi-visualizer.pages.dev/)
+### https://nse-oi-visualizer.pages.dev/
