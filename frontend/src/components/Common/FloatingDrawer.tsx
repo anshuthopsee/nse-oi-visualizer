@@ -17,8 +17,8 @@ const FloatingDrawer = ({ showButton, open, onChange, children }: FloatingDrawer
     <>
       {showButton && <ButtonBase 
         sx={{ display: "flex", flexDirection: "column", gap: 1, backgroundColor: "primary.main", color: "primary.contrastText",
-        position: "absolute", textOrientation: "sideways", writingMode: "vertical-rl", justifyContent: "center", alignItems: "center",
-        height: "60px", width: "20px", borderTopRightRadius: 5, borderBottomRightRadius: 5 }}
+        position: "fixed", textOrientation: "sideways", writingMode: "vertical-rl", justifyContent: "center", alignItems: "center",
+        height: "60px", width: "20px", borderTopRightRadius: 5, borderBottomRightRadius: 5, zIndex: 11 }}
         onClick={() => onChange(true)}
       >
         Open
