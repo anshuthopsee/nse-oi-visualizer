@@ -18,7 +18,7 @@ const TargetUnderlyingPriceSelector = () => {
   const [targetUnderlyingPrice, setTargetUnderlyingPrice] = useState<number>(underlyingPrice);
   const minTargetUnderlyingPrice = Math.round((underlyingPrice * 0.9));
   const maxTargetUnderlyingPrice = Math.round((underlyingPrice * 1.1));
-  const step = Math.round((underlyingPrice * 0.001) / 10) * 10 || 100;
+  const step = Math.ceil((underlyingPrice * 0.005));
 
   const handleReset = () => {
     setTargetUnderlyingPrice(underlyingPrice);
