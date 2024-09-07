@@ -76,7 +76,7 @@ const AddEditLegs = ({ rows, expiries, selectedExpiry, onExpiryChange, strikePri
             aria-label="Add/Edit Legs Table"
           >
             <TableHead>
-              <TableRow>
+              <TableRow sx={{ position: "relative", zIndex: 3 }}>
                 <TableCell align="left" sx={{ py: "3px", borderRight: 0.5, borderRightColor: "divider", backgroundColor: "background.paper" }}>Delta</TableCell>
                 <TableCell align="left" sx={{ py: "3px", borderRight: 0.5, borderRightColor: "divider", backgroundColor: "background.paper" }}>Call LTP</TableCell>
                 <TableCell align="center" sx={{ py: "3px", borderRight: 0.5, borderRightColor: "divider", backgroundColor: "background.paper" }}>Strike</TableCell>
