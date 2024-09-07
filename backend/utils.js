@@ -1,4 +1,4 @@
-import { euroImpliedVol76, gbs } from "./black76.js";
+import { euroImpliedVol76, gbs, gbsLimits } from "./black76.js";
 
 const mergeTwoArrays = (arr1, arr2) => {
   return [...new Set([...arr1, ...arr2])].sort((a, b) => a - b);
@@ -184,16 +184,13 @@ export const getIVAndGreeks = ({ futuresPrice, timeToExpiry, riskFreeRate = 0, c
   let pe = strikePrice > futuresPrice ? 
   [null, 1, null, null, null] : [null, null, null, null, null];
 
-  if (timeToExpiry > 0.000001902) {
+  if (timeToExpiry >= gbsLimits.minT) {
     const type = strikePrice > futuresPrice ? "c" : "p";
     const cp = futuresPrice ? strikePrice > futuresPrice ? item.CE ? item.CE.lastPrice : 0 :
     item.PE ? item.PE.lastPrice : 0 : 0;
     iv = cp !== null ? euroImpliedVol76(type, futuresPrice, strikePrice, timeToExpiry, riskFreeRate, cp) : null;
     ce = iv ? gbs("c", futuresPrice, strikePrice, timeToExpiry, riskFreeRate, costOfCarry, iv) : null;
     pe = iv ? gbs("p", futuresPrice, strikePrice, timeToExpiry, riskFreeRate, costOfCarry, iv) : null;
-    if (iv === null) {
-      console.log(type, futuresPrice, strikePrice, timeToExpiry, riskFreeRate, costOfCarry, cp);
-    }
   };
 
   const daysInYear = new Date().getFullYear() % 4 === 0 ? 366 : 365;
@@ -334,7 +331,7 @@ export const getTargetDateFuturesPrices = (
 export const getOptionPrice = ({ type, futuresPrice, strike, timeToExpiry, 
   iv, riskFreeRate = 0, costOfCarry = 0 }) => {
 
-  if (futuresPrice === 0 || timeToExpiry <= 0.000001902 || iv === 0 || !iv) {
+  if (futuresPrice === 0 || timeToExpiry <= gbsLimits.minT || iv === 0 || !iv) {
     return type === "c" ? Math.max(futuresPrice - strike, 0) 
     : Math.max(strike - futuresPrice, 0);
   };
@@ -343,7 +340,7 @@ export const getOptionPrice = ({ type, futuresPrice, strike, timeToExpiry,
   const price = priceAndGreeks[0];
   return price;
 };
-
+;
 const roundToSignificant = (value) => {
   const magnitude = Math.pow(10, Math.floor(Math.log10(value)));
   const increment = magnitude / 10;

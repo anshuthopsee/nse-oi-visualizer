@@ -30,7 +30,6 @@ const getOptionChainWithRetry = async (cookie, identifier, retryCount = 0) => {
   const options = getOptionsWithUserAgent();
   try {
     const url = baseURL + apiEndpoint + "?symbol=" + encodeURIComponent(identifier);
-    console.log(url);
     const response = await axios.get(url, { ...options, headers: { ...options.headers, Cookie: cookie } });
     const formattedData = formatData(response.data, identifier);
     return formattedData;
@@ -80,12 +79,15 @@ app.get('/', async (req, res) => {
 });
 
 app.post('/builder', async (req, res) => {
-
   const builderData = req.body;
-
-  const payoff = getPayoffData(builderData);
-  res.json(payoff).status(200).end();
-
+  try {
+    const payoff = getPayoffData(builderData);
+    res.json(payoff).status(200).end();
+  } catch (error) {
+    console.error('Payoff calculation error:', error);
+    res.status(500).json({ error: 'Payoff calculation failed.' });
+  };
+  
 });
 
 app.listen(6123, () => {

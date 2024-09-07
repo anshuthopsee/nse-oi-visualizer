@@ -30,7 +30,7 @@ const StrategyBuilder = () => {
     <>
       <Grid container sx={{ flex: 1, height: "100%", width: "100%", p: 2, minHeight: "100vh" }}>
         <>
-          {isFetching && (
+          {(isFetching || isError) && (
             <Box sx={{ position: "absolute", inset: 0, zIndex: (theme) => theme.zIndex.drawer + 1, height: "100dvh", width: "100%", }}>
               <LoadingOverlay type="page" isError={isError} message="Fetching IVs and Prices" />
             </Box>

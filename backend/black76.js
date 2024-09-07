@@ -2,7 +2,7 @@ import gaussian from "gaussian";
 
 const norm = gaussian(0, 1);
 
-const gbsLimits = {
+export const gbsLimits = {
   // An GBS model will return an error if an out-of-bound input is input
   max32: 2147483248.0,
 

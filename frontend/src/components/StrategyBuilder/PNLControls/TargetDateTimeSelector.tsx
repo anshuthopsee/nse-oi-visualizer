@@ -6,8 +6,8 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { getSBTargetDateTime, setSBTargetDateTime, getSBOptionLegs } from '../../../features/selected/selectedSlice';
 import { getTargetDateTime, getMinTargetDateTime, getMaxTargetDateTime, getActiveOptionLegs } from '../../../utils';
 import Box from '@mui/material/Box';
+import { Update } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
-import UpdateIcon from '@mui/icons-material/Update';
 
 const TargetDateTimeSelector = () => {
   const dispatch = useDispatch();
@@ -74,7 +74,7 @@ const TargetDateTimeSelector = () => {
                       handleUpdate()
                     )}
                   >
-                    <UpdateIcon />
+                    <Update />
                   </IconButton>
                 ),
                 sx: {
