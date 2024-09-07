@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type RootState } from "../../store";
 import { type Identifier as Underlying } from "../../identifiers";
-import { modifyOptionLegs, getTargetDateTime } from "../../utils";
+import { modifyOptionLegs, getTargetDateTime, getActiveOptionLegs, getMaxTargetDateTime } from "../../utils";
 import { type StrikeDistancesFromATM, type Expiry, type StrikeRange, type OptionLeg,
   type ATMIVsPerExpiry, type FuturesPerExpiry, type BuilderData } from "./types";
 
@@ -112,27 +112,35 @@ const selectSlice = createSlice({
     },
     setSBOptionLegs: (state, action: PayloadAction<OptionLegPayload>) => {
       const optionLegs = state.strategyBuilder.optionLegs;
+      let updatedOptionLegs: OptionLeg[] = [];
       if (action.payload.type === "add") {
-        state.strategyBuilder.optionLegs = modifyOptionLegs({
+        updatedOptionLegs = modifyOptionLegs({
           optionLegs: optionLegs,
           newOptionLeg: action.payload.optionLeg,
           type: action.payload.type
         });
       } else if (action.payload.type === "replace") {
-        state.strategyBuilder.optionLegs = modifyOptionLegs({
+        updatedOptionLegs = modifyOptionLegs({
           optionLegs: optionLegs,
           newOptionLeg: action.payload.optionLeg,
           optionLegIndex: action.payload.optionLegIndex,
           type: action.payload.type
         });
       } else if (action.payload.type === "delete") {
-        state.strategyBuilder.optionLegs = modifyOptionLegs({
+        updatedOptionLegs = modifyOptionLegs({
           optionLegs: optionLegs,
           optionLegIndex: action.payload.optionLegIndex,
           type: action.payload.type
         });
       } else if (action.payload.type === "set") {
-        state.strategyBuilder.optionLegs = action.payload.optionLegs;
+        updatedOptionLegs = action.payload.optionLegs;
+      };
+      state.strategyBuilder.optionLegs = updatedOptionLegs;
+      const activeOptionLegs = getActiveOptionLegs(updatedOptionLegs);
+      const maxTargetDateTime = getMaxTargetDateTime(activeOptionLegs);
+      const targetDateTime = new Date(state.strategyBuilder.targetDateTimeISOString);
+      if (maxTargetDateTime && targetDateTime.getTime() > maxTargetDateTime.getTime()) {
+        state.strategyBuilder.targetDateTimeISOString = maxTargetDateTime.toISOString();
       };
     },
     setSBProjectedFuturePrices: (state, action: PayloadAction<BuilderData["projectedFuturesPrices"]>) => {

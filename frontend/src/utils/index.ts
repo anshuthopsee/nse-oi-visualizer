@@ -1,5 +1,5 @@
 import { Identifier as Underlying } from "../identifiers";
-import { type StrikeDistancesFromATM, type DataItem, type ContractData, type TransformedData } from "../features/selected/types";
+import { type StrikeDistancesFromATM, type DataItem, type ContractData, type TransformedData, type ActiveOptionLeg } from "../features/selected/types";
 
 export const formatDate = (date: Date): string => {
   const months: string[] = [
@@ -321,4 +321,46 @@ export const getTargetDateTime = () => {
 export const getUnderlyingType = (underlying: Underlying) => {
   return underlying === "NIFTY" || underlying === "BANKNIFTY"
   || underlying === "FINNIFTY" || underlying === "MIDCPNIFTY";
+};
+
+export const getMinTargetDateTime = () => {
+  const dateTime = getIST();
+  dateTime.setHours(9, 15, 0, 0);
+  return dateTime;
+};
+
+export const getMaxTargetDateTime = (optionLegs: ActiveOptionLeg[]) => {
+  return optionLegs.reduce((nearestExpiryDateTime, leg) => {
+    if (nearestExpiryDateTime === undefined) return;
+
+    const dateTime = getIST();
+    const expiryDateTime = new Date(leg.expiry);
+    expiryDateTime.setHours(15, 30, 0, 0);
+
+    if (dateTime < expiryDateTime && expiryDateTime < nearestExpiryDateTime) {
+      return expiryDateTime;
+    };
+    return nearestExpiryDateTime;
+
+  }, optionLegs.length > 0 ? getExpiryDateTime(optionLegs[0].expiry) : undefined);
+};
+
+export const getActiveOptionLegs = (optionLegs: OptionLeg[]) => {
+  const filtered: ActiveOptionLeg[] = [];
+
+    optionLegs?.forEach((leg) =>  {
+      if (leg.active) {
+        filtered.push({
+          action: leg.action,
+          expiry: leg.expiry,
+          strike: leg.strike,
+          type: leg.type,
+          lots: leg.lots,
+          price: leg.price,
+          iv: leg.iv,
+        })
+      };
+    });
+
+    return filtered;
 };

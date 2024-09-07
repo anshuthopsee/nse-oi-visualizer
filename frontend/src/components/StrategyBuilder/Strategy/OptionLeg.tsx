@@ -34,16 +34,6 @@ type OptionLegProps = {
   onDelete: (legIndexPos: number) => void;
 } & Leg;
 
-// IS THE ORDER OF THE LEGS BEING MAINTAINED? 
-// INITIAL IMPRESSION IS THAT IT IS BEING MAINTAINED
-// CHECK HOW IT HANDLES ORDER WHEN EXPIRY IS CHANGED
-// https://codesandbox.io/p/sandbox/textfield-attemp-rxwfgx embedding input in select NOT A PRIOIRTY
-
-// CHECKBOX NEEDS TO SET LEG TO ACTIVE OR INACTIVE
-// LEG ALSO NEEDS DELETE BUTTON
-
-// CHANGE INPUTS FROM ONCHANGE TO ONBLUR???
-
 const OptionLeg = ({ showHeader = false, active, data, action, expiries, 
   expiry, strike, type, lots, price, iv, onChange, onDelete, legIndexPos }: OptionLegProps) => {
 

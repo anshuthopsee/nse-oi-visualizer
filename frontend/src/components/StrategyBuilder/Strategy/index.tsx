@@ -45,11 +45,8 @@ const Strategy = () => {
   }, [rows]);
 
   const syntheticFuturesPrice = useMemo(() => {
-
     if (rows.length === 0) return null;
-
     return rows[0].syntheticFuturesPrice;
-
   }, [rows])
 
   const strikePriceATM = useMemo(() => {

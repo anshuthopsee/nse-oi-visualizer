@@ -2,11 +2,10 @@ import { useMemo, useEffect, type ReactNode } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useBuilderQuery } from "../../../app/services/openInterest";
 import { getSBUnderlyingPrice, getSBTargetUnderlyingPrice, getSBTargetDateTime, getUnderlying,
-  getSBFuturesPerExpiry, getSBATMIVsPerExpiry, getSBOptionLegs, setSBProjectedFuturePrices
+  getSBFuturesPerExpiry, getSBATMIVsPerExpiry, getSBOptionLegs, setSBProjectedFuturePrices,
 } from "../../../features/selected/selectedSlice";
-import { type ActiveOptionLeg } from "../../../features/selected/types";
 import { LOTSIZES } from "../../../identifiers";
-import { getUnderlyingType } from "../../../utils";
+import { getUnderlyingType, getActiveOptionLegs } from "../../../utils";
 import PNLChart from "../../Chart/PNLChart";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -19,41 +18,26 @@ const PNLVisualizer = () => {
   const isIndex = getUnderlyingType(underlying);
   const underlyingPrice = useSelector(getSBUnderlyingPrice);
   const targetUnderlyingPrice = useSelector(getSBTargetUnderlyingPrice);
-  const targetDateTimeISOString = useSelector(getSBTargetDateTime);
   const atmIVsPerExpiry = useSelector(getSBATMIVsPerExpiry);
   const futuresPerExpiry = useSelector(getSBFuturesPerExpiry);
   const optionLegs = useSelector(getSBOptionLegs);
 
-  const filteredOptionLegs = useMemo(() => {
-    const filtered: ActiveOptionLeg[] = [];
-
-    optionLegs?.forEach((leg) =>  {
-      if (leg.active) {
-        filtered.push({
-          action: leg.action,
-          expiry: leg.expiry,
-          strike: leg.strike,
-          type: leg.type,
-          lots: leg.lots,
-          price: leg.price,
-          iv: leg.iv,
-        })
-      };
-    });
-
-    return filtered;
+  const activeOptionLegs = useMemo(() => {
+    return getActiveOptionLegs(optionLegs);
   }, [optionLegs]);
+
+  const targetDateTimeISOString = useSelector(getSBTargetDateTime);
 
   const builderQueryParams = useMemo(() => ({ 
     underlyingPrice, targetUnderlyingPrice, targetDateTimeISOString, atmIVsPerExpiry, 
-    futuresPerExpiry, optionLegs: filteredOptionLegs, lotSize, isIndex }),
+    futuresPerExpiry, optionLegs: activeOptionLegs, lotSize, isIndex }),
     [
       underlyingPrice, targetUnderlyingPrice, targetDateTimeISOString, atmIVsPerExpiry, 
-      futuresPerExpiry, filteredOptionLegs, lotSize, isIndex
+      futuresPerExpiry, activeOptionLegs, lotSize, isIndex
     ]
   );
 
-  const skip = ((filteredOptionLegs.length === 0) || 
+  const skip = ((activeOptionLegs.length === 0) || 
   !underlyingPrice || !targetUnderlyingPrice || !targetDateTimeISOString || 
   !atmIVsPerExpiry || !futuresPerExpiry || !lotSize);
 
@@ -85,10 +69,9 @@ const PNLVisualizer = () => {
     
   }, [builderData]);
 
-
   let content: ReactNode = null;
 
-  if (filteredOptionLegs.length === 0) {
+  if (activeOptionLegs.length === 0) {
     content = (
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", 
         justifyContent: "center", p: 1, height: "100%", width: "100%", rowGap: 2 }}
