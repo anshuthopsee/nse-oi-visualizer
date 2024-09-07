@@ -13,7 +13,7 @@ import Grid from "@mui/material/Grid";
 import Menu from "./Menu";
 import OIChange from "./OIChange";
 import OITotal from "./OITotal";
-import FloatingDrawer from "../FloatingDrawer";
+import FloatingDrawer from "../Common/FloatingDrawer";
 
 const OpenInterest = () => {
   const viewportTheme = useTheme();

@@ -7,7 +7,7 @@ import XAxis from "./XAxis";
 import YAxis from "./YAxis";
 import PNLAtTargetLine from "./PNLAtTarrgetLine";
 import PNLAtExpiryLine from "./PNLAtExpiryLine";
-import LoadingOverlay from "../../LoadingOverlay";
+import LoadingOverlay from "../../Common/LoadingOverlay";
 import Tooltip from "./Tooltip";
 import Crosshair from "./Crosshair";
 

@@ -5,7 +5,7 @@ import { ThemeProvider } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import Header from './Header';
+import Header from './Common/Header';
 import { lightTheme, darkTheme } from '../theme';
 
 const Layout = () => {

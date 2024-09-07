@@ -1,5 +1,5 @@
 import { useEffect, useContext } from 'react';
-import { ToastContext } from '../contexts/ToastContextProvider';
+import { ToastContext } from '../../contexts/ToastContextProvider';
 import Snackbar, { type SnackbarCloseReason } from '@mui/material/Snackbar';
 
 const Toast = () => {

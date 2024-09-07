@@ -1,7 +1,7 @@
 import { useState, useLayoutEffect, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getThemeMode, setThemeMode, type ThemeMode } from '../features/theme/themeSlice';
+import { getThemeMode, setThemeMode, type ThemeMode } from '../../features/theme/themeSlice';
 import useTheme from "@mui/material/styles/useTheme";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import AppBar from '@mui/material/AppBar';
@@ -11,7 +11,7 @@ import IconButton from '@mui/material/IconButton';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import MenuIcon from '@mui/icons-material/Menu';
-import trendIcon from '../assets/trend-icon.svg';
+import trendIcon from '../../assets/trend-icon.svg';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';

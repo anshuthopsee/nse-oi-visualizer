@@ -3,7 +3,7 @@ import Layout from './components/Layout';
 import OpenInterest from './components/OpenInterest';
 import StrategyBuilder from "./components/StrategyBuilder";
 import ToastContextProvider from "./contexts/ToastContextProvider";
-import Toast from "./components/Toast";
+import Toast from "./components/Common/Toast";
 
 function App() {
   return (

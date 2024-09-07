@@ -6,7 +6,7 @@ import useChartDimensions from "../../../hooks/useChartDimensions";
 import BarGroup from "./BarGroup";
 import XAxis from "./XAxis";
 import YAxis from "./YAxis";
-import LoadingOverlay from "../../LoadingOverlay";
+import LoadingOverlay from "../../Common/LoadingOverlay";
 import Tooltip from "./Tooltip";
 
 export const bisectDate = (data: number[], x0: number) => {

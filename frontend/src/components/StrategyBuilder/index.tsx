@@ -7,11 +7,11 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Menu from "./Menu";
 import PNLVisualizer from "./PNLVisualizer";
 import PNLControls from "./PNLControls";
-import LoadingOverlay from "../LoadingOverlay";
+import LoadingOverlay from "../Common/LoadingOverlay";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 // import Typography from "@mui/material/Typography";
-import FloatingDrawer from "../FloatingDrawer";
+import FloatingDrawer from "../Common/FloatingDrawer";
 
 const StrategyBuilder = () => {
   const viewportTheme = useTheme();
