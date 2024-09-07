@@ -81,7 +81,7 @@ const PNLChart = ({ payoffsAtTarget, payoffsAtExpiry, underlyingPrice, targetUnd
         xScale={xScale}
         yScale={yScale}
         boundedHeight={boundedHeight}
-        spotPrice={underlyingPrice}
+        underlyingPrice={underlyingPrice}
         targetUnderlyingPrice={targetUnderlyingPrice}
         payoffAtTarget={payoffAtTarget}
       />

@@ -13,8 +13,7 @@ type TooltipProps = {
   putOIValue: number | null;
   callPrice: number | null;
   putPrice: number | null;
-  callIV: number | null;
-  putIV: number | null;
+  iv: number | null;
 };
 
 const Tooltip = (props: TooltipProps) => {
@@ -29,7 +28,7 @@ const Tooltip = (props: TooltipProps) => {
     type, x, y, strikePrice, 
     boundedHeight, boundedWidth, show, 
     callOIValue, putOIValue, callPrice, 
-    putPrice, callIV, putIV 
+    putPrice, iv
   } = props;
 
   useLayoutEffect(() => {
@@ -92,12 +91,6 @@ const Tooltip = (props: TooltipProps) => {
             <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`Put Price: ₹${putPrice}`}</Typography>
           </div>
           <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
-            <Box sx={{ height: "14px", width: "14px", backgroundColor: "#15d458", 
-              border: 1, borderColor: "text.primary", borderRadius: "2px" }}
-            />
-            <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`Put IV: ${putIV}`}</Typography>
-          </div>
-          <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
             <Box sx={{ height: "14px", width: "14px", backgroundColor: "#eb3434", 
               border: 1, borderColor: "text.primary", borderRadius: "2px" }}
             />
@@ -110,10 +103,10 @@ const Tooltip = (props: TooltipProps) => {
             <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`Call Price: ₹${callPrice}`}</Typography>
           </div>
           <div style={{ display: "inline-flex", margin: "0px 5px", alignItems: "center" }}>
-            <Box sx={{ height: "14px", width: "14px", backgroundColor: "#eb3434", 
+            <Box sx={{ height: "14px", width: "14px", backgroundColor: "primary.main", 
               border: 1, borderColor: "text.primary", borderRadius: "2px" }}
             />
-            <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`Call IV: ${callIV}`}</Typography>
+            <Typography sx={{ ml: "5px", fontSize: "14px" }}>{`IV: ${((iv || 0) * 100).toFixed(2)}`}</Typography>
           </div>
         </Box>
       </div>

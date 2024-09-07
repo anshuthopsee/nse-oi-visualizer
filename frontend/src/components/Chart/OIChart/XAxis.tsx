@@ -1,13 +1,13 @@
 import { useMemo } from "react";
 import { type ScaleBand, type ScaleLinear } from "d3";
-import { getNearestStrikePrice } from "../../utils";
+import { getNearestStrikePrice } from "../../../utils";
 
 type XAxisProps = {
   xScale: ScaleBand<string>;
   yScale: ScaleLinear<number, number>;
   boundedHeight: number;
   label?: string;
-  spotPrice?: number | null;
+  underlyingPrice?: number | null;
 };
 
 const XAxis = ({
@@ -15,17 +15,17 @@ const XAxis = ({
   yScale,
   boundedHeight,
   label,
-  spotPrice = null,
+  underlyingPrice = null,
 }: XAxisProps) => {
 
   const numberOfTicksToShow = Math.round(xScale.range()[xScale.range().length - 1] / 100);
 
   const strikePriceATM = useMemo(() => {
-    if (spotPrice === null) return null;
+    if (underlyingPrice === null) return null;
 
     const strikePrices = xScale.domain().map((d) => Number(d));
-    return getNearestStrikePrice(strikePrices, spotPrice);
-  }, [xScale, spotPrice]);
+    return getNearestStrikePrice(strikePrices, underlyingPrice);
+  }, [xScale, underlyingPrice]);
 
   const strikePriceATMPosition = useMemo(() => {
     if (strikePriceATM === null || strikePriceATM === 0) return null;
@@ -89,7 +89,7 @@ const XAxis = ({
           </g>
         )
       })}
-      {spotPrice !== null && strikePriceATMPosition !== null && (
+      {underlyingPrice !== null && strikePriceATMPosition !== null && (
         <g
           transform={`translate(${strikePriceATMPosition}, 0)`}
         >
@@ -100,7 +100,7 @@ const XAxis = ({
               fontSize: "11px",
               transform: `translateY(${-boundedHeight - 10}px)`
             }}
-          >{`Spot- ${spotPrice}`}</text>
+          >{`Underlying: ${underlyingPrice}`}</text>
           <line
             y2={-boundedHeight}
             stroke="currentColor"

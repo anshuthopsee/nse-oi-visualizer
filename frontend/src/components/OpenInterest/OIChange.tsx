@@ -130,7 +130,7 @@ const OIChange = ({ data, expiries, strikeRange, isFetching, isError }: OIChange
       <Box sx={{ flex: 1, minWidth: 0, minHeight: 0, overflow: "hidden" }}>
         <OIChart 
           data={filteredData || []} 
-          spotPrice={underlyingPrice} 
+          underlyingPrice={underlyingPrice} 
           type="changeinOpenInterest"
           isFetching={isFetching}
           isError={isError}

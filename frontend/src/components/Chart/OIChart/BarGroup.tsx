@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { type ScaleBand, type ScaleLinear } from "d3";
-import { type DataItem } from "../../features/selected/types";
+import { type DataItem } from "../../../features/selected/types";
 
 type BarGroupProps = {
   d: DataItem,

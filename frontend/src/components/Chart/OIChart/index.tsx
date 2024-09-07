@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import * as d3 from "d3";
 import { bisector } from "d3";
-import { type DataItem } from "../../features/selected/types";
-import useChartDimensions from "../../hooks/useChartDimensions";
+import { type DataItem } from "../../../features/selected/types";
+import useChartDimensions from "../../../hooks/useChartDimensions";
 import BarGroup from "./BarGroup";
 import XAxis from "./XAxis";
 import YAxis from "./YAxis";
-import LoadingOverlay from "../LoadingOverlay";
+import LoadingOverlay from "../../LoadingOverlay";
 import Tooltip from "./Tooltip";
 
 export const bisectDate = (data: number[], x0: number) => {
@@ -24,8 +24,7 @@ type TooltipState = {
   putOI: number | null,
   callPrice: number | null,
   putPrice: number | null,
-  callIV: number | null,
-  putIV: number | null,
+  iv: number | null,
 }
 
 type OIChartProps = {
@@ -33,10 +32,10 @@ type OIChartProps = {
   type: "changeinOpenInterest" | "openInterest",
   isFetching: boolean,
   isError: boolean,
-  spotPrice?: number | null,
+  underlyingPrice?: number | null,
 };
 
-const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) => {
+const OIChart = ({ data, underlyingPrice, type, isFetching, isError }: OIChartProps) => {
 
   const [mouseXPos, setMouseXPos] = useState<number | null>(null);
   const [mouseYPos, setMouseYPos] = useState<number | null>(null);
@@ -49,8 +48,7 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
     putOI: null,
     callPrice: null,
     putPrice: null,
-    callIV: null,
-    putIV: null,
+    iv: null,
   });
 
   const { 
@@ -137,8 +135,7 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
         putOI: nearestStrikePriceData.PE?.[type] || 0,
         callPrice: nearestStrikePriceData.CE?.lastPrice || 0,
         putPrice: nearestStrikePriceData.PE?.lastPrice || 0,
-        callIV: nearestStrikePriceData.CE?.impliedVolatility || 0,
-        putIV: nearestStrikePriceData.PE?.impliedVolatility || 0,
+        iv: nearestStrikePriceData.iv || 0,
       })
     };
 
@@ -154,8 +151,7 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
       putOI: null,
       callPrice: null,
       putPrice: null,
-      callIV: null,
-      putIV: null,
+      iv: null,
     });
 
     setMouseXPos(null);
@@ -193,10 +189,10 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
         yScale={yScale}
         boundedHeight={boundedHeight}
         label="Strike Price"
-        spotPrice={spotPrice}
+        underlyingPrice={underlyingPrice}
       />
     </foreignObject>
-  }, [xScale, yScale, boundedHeight, marginBottom, boundedWidth, spotPrice]);
+  }, [xScale, yScale, boundedHeight, marginBottom, boundedWidth, underlyingPrice]);
 
   const yAxis = useMemo(() => {
     return <YAxis
@@ -228,8 +224,7 @@ const OIChart = ({ data, spotPrice, type, isFetching, isError }: OIChartProps) =
             putOIValue={tooltipState.putOI}
             callPrice={tooltipState.callPrice}
             putPrice={tooltipState.putPrice}
-            callIV={tooltipState.callIV}
-            putIV={tooltipState.putIV}
+            iv={tooltipState.iv}
             boundedHeight={boundedHeight}
             boundedWidth={boundedWidth}
           />

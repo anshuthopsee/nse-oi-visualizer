@@ -73,11 +73,11 @@ const Line = ({ xScale, yScale, payoffsAtExpiry }: PNLAtExpiryLineProps) => {
   
     if (positivePayoffLine.length) {
       positivePayoffLines.push(positivePayoffLine);
-    }
+    };
   
     if (negativePayoffLine.length) {
       negativePayoffLines.push(negativePayoffLine);
-    }
+    };
   
     return { positivePayoffLines, negativePayoffLines };
   }, [payoffsAtExpiry]);
@@ -89,12 +89,12 @@ const Line = ({ xScale, yScale, payoffsAtExpiry }: PNLAtExpiryLineProps) => {
           <path
             d={line(payoff) || ""}
             fill={"none"}
-            stroke={"#3ede59"}
+            stroke={"#15d458"}
             strokeWidth={2}
           />
           <path
             d={area(payoff) || ""}
-            fill={"#3ede59"}
+            fill={"#15d458"}
             opacity={0.2}
           />
         </Fragment>
@@ -104,12 +104,12 @@ const Line = ({ xScale, yScale, payoffsAtExpiry }: PNLAtExpiryLineProps) => {
         <path
           d={line(payoff) || ""}
           fill={"none"}
-          stroke={"#de2150"}
+          stroke={"#eb3434"}
           strokeWidth={2}
         />
         <path
           d={area(payoff) || ""}
-          fill={"#de2150"}
+          fill={"#eb3434"}
           opacity={0.2}
         />
       </Fragment>

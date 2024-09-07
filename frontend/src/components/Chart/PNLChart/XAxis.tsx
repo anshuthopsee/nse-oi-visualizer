@@ -6,7 +6,7 @@ type XAxisProps = {
   yScale: ScaleLinear<number, number>;
   boundedHeight: number;
   label?: string;
-  spotPrice: number | null;
+  underlyingPrice: number | null;
   targetUnderlyingPrice: number;
   payoffAtTarget: number;
 };
@@ -16,16 +16,16 @@ const XAxis = ({
   yScale,
   boundedHeight,
   label,
-  spotPrice,
+  underlyingPrice,
   targetUnderlyingPrice,
   payoffAtTarget
 }: XAxisProps) => {
 
-  const spotPricePosition = useMemo(() => {
-    if (spotPrice === null || spotPrice === 0) return null;
+  const underlyingPricePosition = useMemo(() => {
+    if (underlyingPrice === null || underlyingPrice === 0) return null;
 
-    return (xScale(spotPrice) || 0);
-  }, [xScale, spotPrice]);
+    return (xScale(underlyingPrice) || 0);
+  }, [xScale, underlyingPrice]);
 
   const targetUnderlyingPricePosition = useMemo(() => {
     if (!targetUnderlyingPrice) return null;
@@ -80,9 +80,9 @@ const XAxis = ({
           </g>
         )
       })}
-      {spotPrice !== null && (
+      {underlyingPrice !== null && (
         <g
-          transform={`translate(${spotPricePosition}, 0)`}
+          transform={`translate(${underlyingPricePosition}, 0)`}
         >
           <text 
             textAnchor="middle" 
@@ -91,7 +91,7 @@ const XAxis = ({
               fontSize: "11px",
               transform: `translateY(${-boundedHeight - 5}px)`
             }}
-          >{`Underlying: ${spotPrice}`}</text>
+          >{`Underlying: ${underlyingPrice}`}</text>
           <line
             y2={-boundedHeight}
             stroke="currentColor"

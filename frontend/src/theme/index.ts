@@ -66,9 +66,9 @@ const components = {
 
 const lightTheme = createTheme({
   palette: {
-    mode: 'light', // Enable light mode
+    mode: 'light',
     background: {
-      default: '#f2f2f2', // Set the background color for light mode,
+      default: '#f2f2f2',
       paper: "#ffffff",
     },
     text: {
@@ -98,13 +98,12 @@ const lightTheme = createTheme({
   components
 });
 
-// Define the dark mode theme (you can customize it as needed)
 const darkTheme = createTheme({
   palette: {
-    mode: 'dark', // Enable dark mode
+    mode: 'dark',
     background: {
       default: "#000000",
-      paper: '#0d0d0d', // Set the background color for dark mode
+      paper: '#0d0d0d',
     },
     text: {
       primary: "#ffffff",

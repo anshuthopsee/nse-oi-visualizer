@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { ScaleLinear } from 'd3';
-import { formatAndAddSuffix } from '../../utils';
+import { formatAndAddSuffix } from '../../../utils';
 
 type YAxisProps = {
   yScale: ScaleLinear<number, number>;
