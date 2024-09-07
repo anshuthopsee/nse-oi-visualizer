@@ -1,6 +1,6 @@
 ## NSE OI VISUALIZER & STRATEGY-BUILDER
 
-A simple React application inspired by [Sensibull](https://www.sensibull.com/), that visualizes real-time Open Interest data and Option Strategy Profit and Loss (WIP) for Indian Benchmark Indices and F&O stocks. The app fetches data from NSE API to show OI bar plots and Strategy Payoff line plots. The data is auto-updated at 3-minute intervals, precisely at times when the minutes are divisible by 3. Frontend is made with React, Material UI, Redux and D3. Backend is made with NodeJS. (Note: The app is work in progress).
+A simple React application inspired by [Sensibull](https://www.sensibull.com/), that visualizes real-time Open Interest data and Option Strategy Profit and Loss (WIP) for Indian Benchmark Indices and F&O stocks. The app fetches data from NSE API to show OI bar plots and Strategy Payoff line plots. The data is auto-updated at 3-minute intervals. Frontend is made with React, Material UI, Redux and D3. Backend is made with NodeJS. (Note: The app is work in progress).
 
 ## Demo
 ![Usage Demo](frontend/demo/nse-oi-visualizer-demo.gif)
@@ -34,7 +34,7 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 4. FII and DII data visualization.
 
 ## Note
-1. IV calculation and Option price calculation Black-Scholes code sourced from [dedwards25/Python_Option_Pricing](https://github.com/dedwards25/Python_Option_Pricing)
+1. IV calculation and Option price calculation Black-76/Generalized-Black-Scholes code is sourced from [dedwards25/Python_Option_Pricing](https://github.com/dedwards25/Python_Option_Pricing)
 2. Minor differences in IVs and as a result in Option Payoffs as compared to Sensibull might be down to the fact that all the IVs are being calculated on synthetic futures prices, whereas Sensibull uses actual futures prices where available for monthly expiries. Another reason might be due to variations in time to expiry calculations.
 
 ## References
@@ -42,3 +42,6 @@ A simple React application inspired by [Sensibull](https://www.sensibull.com/), 
 2. https://sensibull.freshdesk.com/support/solutions/folders/43000300252 Sensibull explains the Math behind Option Pricing here.
 3. https://2019.wattenberger.com/blog/react-and-d3 this is an insightful blog on how to use D3 with React, while keeping things Reacty.
 4. https://www.nseindia.com/ data source.
+
+## Site link
+### (https://nse-oi-visualizer.pages.dev/)
