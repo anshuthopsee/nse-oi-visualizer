@@ -8,7 +8,7 @@ type YAxisProps = {
   boundedWidth: number;
 };
 
-const YAxis = ({ yScale, label, boundedWidth }: YAxisProps) => {
+const YAxis = ({ yScale, label }: YAxisProps) => {
 
   const range = useMemo(() => {
     return yScale.range();

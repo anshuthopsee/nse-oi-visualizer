@@ -41,7 +41,7 @@ const PNLVisualizer = () => {
   !underlyingPrice || !targetUnderlyingPrice || !targetDateTimeISOString || 
   !atmIVsPerExpiry || !futuresPerExpiry || !lotSize);
 
-  const { data: builderData, isFetching, isError, error } = useBuilderQuery(builderQueryParams, { skip });
+  const { data: builderData, isFetching, isError } = useBuilderQuery(builderQueryParams, { skip });
 
   const filteredPayoffsAtTarget = useMemo(() => {
 
