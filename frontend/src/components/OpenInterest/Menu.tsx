@@ -5,7 +5,7 @@ import SelectUnderlying from "./SelectUnderlying";
 import Expiries from "./Expiries";
 import StrikeRange from "./StrikeRange";
 
-const LastUpdateAt = () => {
+const NextUpdateAt = () => {
   const nextUpdateAt = useSelector(getNextUpdateAt);
 
   return (
@@ -25,7 +25,7 @@ const Menu = () => {
       <SelectUnderlying/>
       <Expiries/>
       <StrikeRange/>
-      <LastUpdateAt/>
+      <NextUpdateAt/>
     </Box>
   );
 };

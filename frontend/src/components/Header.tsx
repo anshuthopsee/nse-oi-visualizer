@@ -8,12 +8,11 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import Box from '@mui/material/Box';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import MenuIcon from '@mui/icons-material/Menu';
 import trendIcon from '../assets/trend-icon.svg';
-import ArrorForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Drawer from "@mui/material/Drawer";
@@ -101,29 +100,17 @@ const Header = () => {
             size="small"
             color="inherit"
             aria-label="menu"
-            onClick={() => setDrawerOpen(true)}
+            onClick={() => setDrawerOpen((prevState) => !prevState)}
             sx={{ display: { xs: 'flex', lg: 'none'}, color: "text.primary", mr: 1.5 }}
           >
-            <MenuIcon />
+            {drawerOpen ? <ArrowForwardIcon /> : <MenuIcon />}
           </IconButton>
           <Drawer
             anchor="right"
             open={drawerOpen}
             onClose={() => setDrawerOpen(false)}
           >
-            <div style={{ width: "300px" }}>
-              <Box sx={{ display: "inline-flex", height: "65px", width: "100%", justifyContent: "space-between",
-                 alignItems: "center", borderBottom: 1, borderColor: "divider" }}>
-                {renderLogo()}
-                <IconButton
-                  size="small"
-                  color="inherit"
-                  onClick={() => setDrawerOpen(false)}
-                  sx={{ display: { xs: 'flex', lg: 'none'}, color: "text.primary", mr: 1.5 }}
-                >
-                  <ArrorForwardIcon />
-                </IconButton>
-              </Box>
+            <div style={{ width: "300px", paddingTop: "65px" }}>
               <Tabs 
                 value={value} onChange={handleChange} orientation="vertical" variant="scrollable" sx={{ mt: 2 }}
                 TabIndicatorProps={{ sx: { left: 0, width: "5px" } }}

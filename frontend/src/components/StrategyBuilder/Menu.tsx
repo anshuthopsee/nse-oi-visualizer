@@ -4,7 +4,7 @@ import { Box, Typography } from "@mui/material";
 import SelectUnderlying from "../OpenInterest/SelectUnderlying";
 import Strategy from "./Strategy";
 
-const LastUpdateAt = () => {
+const NextUpdateAt = () => {
   const nextUpdateAt = useSelector(getNextUpdateAt);
 
   return (
@@ -24,7 +24,7 @@ const Menu = () => {
       <SelectUnderlying/>
       <Box sx={{ display: "flex", flexDirection: "column", width: "100%", overflowY: "scroll", rowGap: "10px" }}>
         <Strategy/>
-        <LastUpdateAt/>
+        <NextUpdateAt/>
       </Box>
     </Box>
   );
