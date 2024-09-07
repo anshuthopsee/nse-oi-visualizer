@@ -30,8 +30,8 @@ type PNLChartProps = {
 
 const PNLChart = ({ payoffsAtTarget, payoffsAtExpiry, underlyingPrice, targetUnderlyingPrice, payoffAtTarget, isFetching, isError }: PNLChartProps) => {
   
-  const [mouseXPos, setMouseXPos] = useState<number | null>(null);
-  const [mouseYPos, setMouseYPos] = useState<number | null>(null);
+  const [crosshairXPos, setCrosshairXPos] = useState<number | null>(null);
+  const [crosshairYPos, setCrosshairYPos] = useState<number | null>(null);
   const [tooltipState, setTooltipState] = useState<TooltipState | null>(null);
   const [chartContainerRef, chartDimensions] = useChartDimensions();
 
@@ -133,14 +133,14 @@ const PNLChart = ({ payoffsAtTarget, payoffsAtExpiry, underlyingPrice, targetUnd
       })
     };
 
-    setMouseXPos(xPos);
-    setMouseYPos(yPos);
+    setCrosshairXPos(xPos);
+    setCrosshairYPos(yPos);
   };
 
   const handleMouseLeave = () => {
     setTooltipState(null);
-    setMouseXPos(null);
-    setMouseYPos(null);
+    setCrosshairXPos(null);
+    setCrosshairYPos(null);
   };
 
   return (
@@ -158,8 +158,8 @@ const PNLChart = ({ payoffsAtTarget, payoffsAtExpiry, underlyingPrice, targetUnd
           {xAxis}
           <Crosshair 
             show={!!tooltipState} 
-            x={mouseXPos || 0} 
-            y={mouseYPos || 0} 
+            x={crosshairXPos || 0} 
+            y={crosshairYPos || 0} 
             boundedHeight={boundedHeight} 
             boundedWidth={boundedWidth}
           />
@@ -168,8 +168,8 @@ const PNLChart = ({ payoffsAtTarget, payoffsAtExpiry, underlyingPrice, targetUnd
             underlyingPriceAt={tooltipState?.underlyingPriceAt || null}
             payoffAtTarget={tooltipState?.payoffAtTarget || null}
             payoffAtExpiry={tooltipState?.payoffAtExpiry || null}
-            x={mouseXPos || 0}
-            y={mouseYPos || 0}
+            x={crosshairXPos || 0}
+            y={crosshairYPos || 0}
             boundedHeight={boundedHeight}
             boundedWidth={boundedWidth}
           />

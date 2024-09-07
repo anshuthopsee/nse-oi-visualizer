@@ -25,48 +25,62 @@ const Line = ({ xScale, yScale, payoffsAtExpiry }: PNLAtExpiryLineProps) => {
       .y1(d => yScale(d.payoff));
   }, [xScale, yScale, payoffsAtExpiry]);
 
-  let positivePayoffLines: PayoffAt[][] = []
-  let negativePayoffLines: PayoffAt[][] = [];
-
-  let positivePayoffLine: PayoffAt[] = [];
-  let negativePayoffLine: PayoffAt[] = [];
-
-  payoffsAtExpiry.forEach((payoff, i) => {
-    const nextPayoff = payoffsAtExpiry[i + 1];
-
-    if (payoff.payoff > 0) {
-      positivePayoffLine.push(payoff);
-    } else if (payoff.payoff < 0) {
-      negativePayoffLine.push(payoff);
-    };
-
-    if (nextPayoff) {
-      const linearScale = d3.scaleLinear()
+  const { positivePayoffLines, negativePayoffLines } = useMemo(() => {
+    let positivePayoffLines: PayoffAt[][] = [];
+    let negativePayoffLines: PayoffAt[][] = [];
+  
+    let positivePayoffLine: PayoffAt[] = [];
+    let negativePayoffLine: PayoffAt[] = [];
+  
+    payoffsAtExpiry.forEach((payoff, i) => {
+      const nextPayoff = payoffsAtExpiry[i + 1];
+  
+      if (payoff.payoff > 0) {
+        positivePayoffLine.push(payoff);
+      } else if (payoff.payoff < 0) {
+        negativePayoffLine.push(payoff);
+      }
+  
+      if (
+        nextPayoff &&
+        ((payoff.payoff > 0 && nextPayoff.payoff < 0) ||
+          (payoff.payoff < 0 && nextPayoff.payoff > 0))
+      ) {
+        const linearScale = d3.scaleLinear()
           .domain([nextPayoff.payoff, payoff.payoff])
           .range([nextPayoff.at, payoff.at]);
-
+  
         const atWhenPayoffIsZero = linearScale(0);
-
-        const zeroPayoffPoint = {
+  
+        const zeroPayoffPoint: PayoffAt = {
           at: atWhenPayoffIsZero,
           payoff: 0,
         };
-
-      if (payoff.payoff >= 0 && nextPayoff.payoff <= 0) {
-        positivePayoffLine.push(zeroPayoffPoint);
-        negativePayoffLine.push(zeroPayoffPoint);
-        positivePayoffLines.push(positivePayoffLine);
-        negativePayoffLines.push(negativePayoffLine);
-        positivePayoffLine = [];
-      } else if (payoff.payoff <= 0 && nextPayoff.payoff >= 0) {
-        positivePayoffLine.push(zeroPayoffPoint);
-        negativePayoffLine.push(zeroPayoffPoint);
-        positivePayoffLines.push(positivePayoffLine);
-        negativePayoffLines.push(negativePayoffLine);
-        negativePayoffLine = [];
-      };
-    };
-  });
+  
+        if (payoff.payoff >= 0 && nextPayoff.payoff <= 0) {
+          positivePayoffLine.push(zeroPayoffPoint);
+          negativePayoffLine.push(zeroPayoffPoint);
+          positivePayoffLines.push(positivePayoffLine);
+          positivePayoffLine = [];
+        } else if (payoff.payoff <= 0 && nextPayoff.payoff >= 0) {
+          positivePayoffLine.push(zeroPayoffPoint);
+          negativePayoffLine.push(zeroPayoffPoint);
+          negativePayoffLines.push(negativePayoffLine);
+          negativePayoffLine = [];
+        }
+      }
+    });
+  
+    if (positivePayoffLine.length) {
+      positivePayoffLines.push(positivePayoffLine);
+    }
+  
+    if (negativePayoffLine.length) {
+      negativePayoffLines.push(negativePayoffLine);
+    }
+  
+    return { positivePayoffLines, negativePayoffLines };
+  }, [payoffsAtExpiry]);
 
   return (
     <g>

@@ -8,9 +8,6 @@ type StrikeSelectProps = {
   onChange: (strike: number) => void;
 };
 
-// IF STRIKE IS CHANGED, IT WILL CREATE A NEW LEG WON'T IT? THIS IS NOT DESIRED
-// EXPIRY CHANGE SHOULD NOT BE ALLOWED IF STRIKE IS NOT AVAILABLE FOR THAT EXPIRY
-
 const StrikeSelect = ({ strikes, strike, onChange, showHeader = false }: StrikeSelectProps) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center",rowGap: "10px" }}>
