@@ -331,7 +331,7 @@ export const getTargetDateFuturesPrices = (
 export const getOptionPrice = ({ type, futuresPrice, strike, timeToExpiry, 
   iv, riskFreeRate = 0, costOfCarry = 0 }) => {
 
-  if (futuresPrice === 0 || timeToExpiry <= gbsLimits.minT || iv === 0 || !iv) {
+  if (futuresPrice <= gbsLimits.minFs || timeToExpiry <= gbsLimits.minT || iv === gbsLimits.minV || !iv) {
     return type === "c" ? Math.max(futuresPrice - strike, 0) 
     : Math.max(strike - futuresPrice, 0);
   };
@@ -386,7 +386,7 @@ const generatePayoffRange = ({ optionLegs, lotSize, projectedFuturesPrices,
     const { expiry, strike, lots, iv, price, action } = optionLeg;
     
     const projectedFuturePrice = projectedFuturesPrices.get(expiry);
-    let timeToExpiry = convertDaysToYears(getDaysToExpiry(expiry, targetDateTime));
+    const timeToExpiry = convertDaysToYears(getDaysToExpiry(expiry, targetDateTime));
 
     const minExpiryDateTime = getExpiryDateTime(minExpiry);
     const timeToExpiryFromMin = convertDaysToYears(getDaysToExpiry(expiry, minExpiryDateTime));
@@ -407,7 +407,7 @@ const generatePayoffRange = ({ optionLegs, lotSize, projectedFuturesPrices,
       };
       
       const targetF = Math.max(underlyingPrice + priceDiff, 0.01);
-      const expiryF = timeToExpiry === 0 ? underlyingPrice : 
+      const expiryF = timeToExpiry <= gbsLimits.minT ? underlyingPrice : 
       Math.max(underlyingPrice + (priceDiff * (timeToExpiryFromMin / timeToExpiry)), 0);
       const payoffAtTarget = calcPayoff(type, targetF, strike, timeToExpiry, iv, price, lots, lotSize, action);
       const payoffAtExpiry = calcPayoff(type, expiryF, strike, timeToExpiryFromMin, iv, price, lots, lotSize, action);
