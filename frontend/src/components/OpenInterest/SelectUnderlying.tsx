@@ -3,7 +3,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import SelectIndices from "./SelectIndices";
 import identifiers from "../../identifiers";
 import { useDispatch, useSelector } from "react-redux";
-import { getUnderlying, setUnderlying, setSBOptionLegs, setSBTargetDateTime } from "../../features/selected/selectedSlice";
+import { getUnderlying, setUnderlying, setSBOptionLegs, setSBTargetDateTime, setSBTargetUnderlyingPrice } from "../../features/selected/selectedSlice";
 import { type Identifier as Underlying } from "../../identifiers";
 import { getTargetDateTime } from "../../utils";
 
@@ -12,14 +12,20 @@ const SelectUnderlying = () => {
   const dispatch = useDispatch();
   const underlying = useSelector(getUnderlying);
 
-
   const handleChange = (selected: Underlying) => {
     dispatch(setUnderlying(selected));
     dispatch(setSBOptionLegs({
       type: "set",
       optionLegs: []
     }));
-    dispatch(setSBTargetDateTime(getTargetDateTime().toISOString()));
+    dispatch(setSBTargetDateTime({
+      value: getTargetDateTime().toISOString(),
+      autoUpdate: true
+    }));
+    dispatch(setSBTargetUnderlyingPrice({
+      value: null,
+      autoUpdate: true
+    }));
   };
 
   return (
