@@ -1,4 +1,5 @@
 import { useMemo, Fragment } from "react";
+import useTheme from "@mui/material/styles/useTheme";
 import * as d3 from "d3";
 import { type ScaleLinear } from "d3";
 import { PayoffAt } from "../../../features/selected/types";
@@ -11,6 +12,8 @@ type PNLAtExpiryLineProps = {
 };
 
 const Line = ({ xScale, yScale, payoffsAtExpiry }: PNLAtExpiryLineProps) => {
+
+  const theme = useTheme();
 
   const line = useMemo(() => {
     return d3.line<PayoffAt>()
@@ -89,12 +92,12 @@ const Line = ({ xScale, yScale, payoffsAtExpiry }: PNLAtExpiryLineProps) => {
           <path
             d={line(payoff) || ""}
             fill={"none"}
-            stroke={"#15d458"}
+            stroke={theme.palette.payoffLine.itm}
             strokeWidth={2}
           />
           <path
             d={area(payoff) || ""}
-            fill={"#15d458"}
+            fill={theme.palette.payoffLine.itm}
             opacity={0.2}
           />
         </Fragment>
@@ -104,12 +107,12 @@ const Line = ({ xScale, yScale, payoffsAtExpiry }: PNLAtExpiryLineProps) => {
         <path
           d={line(payoff) || ""}
           fill={"none"}
-          stroke={"#eb3434"}
+          stroke={theme.palette.payoffLine.otm}
           strokeWidth={2}
         />
         <path
           d={area(payoff) || ""}
-          fill={"#eb3434"}
+          fill={theme.palette.payoffLine.otm}
           opacity={0.2}
         />
       </Fragment>

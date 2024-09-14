@@ -21,7 +21,11 @@ declare module "@mui/material/styles" {
     },
     sliderMark: {
       primary: string;
-    }
+    },
+    payoffLine: {
+      itm: string;
+      otm: string;
+    };
   }
 
   interface PaletteOptions {
@@ -43,6 +47,10 @@ declare module "@mui/material/styles" {
     },
     sliderMark?: {
       primary: string;
+    },
+    payoffLine: {
+      itm: string;
+      otm: string;
     };
   }
 }
@@ -93,6 +101,10 @@ const lightTheme = createTheme({
     },
     sliderMark: {
       primary: "white",
+    },
+    payoffLine: {
+      itm: "#15d458",
+      otm: "#eb3434"
     }
   },
   components
@@ -124,6 +136,10 @@ const darkTheme = createTheme({
     },
     sliderMark: {
       primary: "#0d0d0d",
+    }, 
+    payoffLine: {
+      itm: "#4dff6a",
+      otm: "#ff3848"
     }
   },
   components
