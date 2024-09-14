@@ -13,7 +13,6 @@ const getOptionsWithUserAgent = () => {
       "User-Agent": userAgent.toString(),
       "Connection": "keep-alive",
     },
-    timeout: 6000,
     withCredentials: true,
   };
 };
@@ -47,7 +46,7 @@ const getOptionChainWithRetry = async (cookie, identifier, retryCount = 0) => {
 const getCookies = async () => {
   const options = getOptionsWithUserAgent();
   try {
-    const response = await axios.get(baseURL, options);
+    const response = await axios.get(baseURL + "option-chain", options);
     const cookie = response.headers['set-cookie'];
     return cookie;
   } catch (error) {
