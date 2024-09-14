@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import useDeepMemo from "../../../hooks/useDeepMemo";
 import { getUnderlying, setNextUpdateAt, setSBOptionLegs, getSBOptionLegs, getSBExpiry, setSBExpiry, 
-  setSBATMIVsPerExpiry, setSBFuturesPerExpiry, setSBUnderlyingPrice, setSBTargetUnderlyingPrice,
-  setSBTargetDateTime
+  setSBATMIVsPerExpiry, setSBFuturesPerExpiry, setSBUnderlyingPrice, getSBTargetDateTime, getSBTargetUnderlyingPrice,
+  setSBTargetUnderlyingPrice, setSBTargetDateTime
 } from "../../../features/selected/selectedSlice";
 import { useOpenInterestQuery, openInterestApi } from "../../../app/services/openInterest";
 import { type DataItem } from "../../../features/selected/types";
@@ -34,6 +34,8 @@ const Strategy = () => {
   const underlying = useSelector(getUnderlying);
   const expiry = useSelector(getSBExpiry);
   const optionLegs = useSelector(getSBOptionLegs);
+  const targetDateTimeAutoUpdate = useSelector(getSBTargetDateTime).autoUpdate;
+  const targetUnderlyingPriceAutoUpdate = useSelector(getSBTargetUnderlyingPrice).autoUpdate;
   const filteredOptionLegs = useMemo(() => optionLegs.filter((leg) => leg.active), [optionLegs]);
   const memoizedOptionLegs = useDeepMemo(optionLegs);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
@@ -121,10 +123,21 @@ const Strategy = () => {
         futuresPerExpiry[key] = grouped[key].syntheticFuturesPrice || 0;
       });
       dispatch(setSBUnderlyingPrice(underlyingValue));
-      dispatch(setSBTargetUnderlyingPrice(underlyingValue));
       dispatch(setSBATMIVsPerExpiry(atmIVsPerExpiry));
       dispatch(setSBFuturesPerExpiry(futuresPerExpiry));
-      dispatch(setSBTargetDateTime(getTargetDateTime().toISOString()));
+      if (targetUnderlyingPriceAutoUpdate) {
+        dispatch(setSBTargetUnderlyingPrice({
+          value: underlyingValue,
+          autoUpdate: true
+        }));
+      };
+      if (targetDateTimeAutoUpdate) {
+        const targetDateTime = getTargetDateTime();
+        dispatch(setSBTargetDateTime({
+          value: targetDateTime.toISOString(),
+          autoUpdate: true
+        }));
+      };
     };
   }, [data]);
 

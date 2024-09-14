@@ -17,10 +17,9 @@ const TargetDateTimeSelector = () => {
   }, [optionLegs]);
   const minTargetDateTime = getMinTargetDateTime();
   const maxTargetDateTime = getMaxTargetDateTime(activeOptionLegs);
-  const targetDateTime = new Date(useSelector(getSBTargetDateTime));
-
+  const targetDateTime = new Date(useSelector(getSBTargetDateTime).value);
   const disabled = !activeOptionLegs || activeOptionLegs.length === 0;
-
+  const resetAutoUpdateDisabled = targetDateTime.getTime() === getTargetDateTime().getTime();
   const [pickerOpen, setPickerOpen] = useState<boolean>(false);
 
   const handleDateChange = (date: Date | null) => {
@@ -32,12 +31,18 @@ const TargetDateTimeSelector = () => {
         date = maxTargetDateTime;
       };
 
-      dispatch(setSBTargetDateTime(date.toISOString()));
+      dispatch(setSBTargetDateTime({
+        value: date.toISOString(),
+        autoUpdate: false
+      }));
     };
   };
 
   const handleUpdate = () => {
-    dispatch(setSBTargetDateTime(getTargetDateTime().toISOString()));
+    dispatch(setSBTargetDateTime({
+      value: getTargetDateTime().toISOString(),
+      autoUpdate: true
+    }));
   };
 
   return (
@@ -67,8 +72,8 @@ const TargetDateTimeSelector = () => {
                 readOnly: true,
                 startAdornment: (
                   <IconButton
-                    disabled={disabled} 
-                    sx={{ color: disabled ? "disabled" : "primary.main" }} 
+                    disabled={disabled || resetAutoUpdateDisabled} 
+                    sx={{ color: (disabled || resetAutoUpdateDisabled) ? "disabled" : "primary.main" }} 
                     onClick={(e) => (
                       e.stopPropagation(),
                       handleUpdate()

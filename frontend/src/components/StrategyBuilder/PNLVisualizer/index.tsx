@@ -17,7 +17,7 @@ const PNLVisualizer = () => {
   const lotSize = LOTSIZES.get(underlying) || null;
   const isIndex = getUnderlyingType(underlying);
   const underlyingPrice = useSelector(getSBUnderlyingPrice);
-  const targetUnderlyingPrice = useSelector(getSBTargetUnderlyingPrice);
+  const targetUnderlyingPrice = useSelector(getSBTargetUnderlyingPrice).value;
   const atmIVsPerExpiry = useSelector(getSBATMIVsPerExpiry);
   const futuresPerExpiry = useSelector(getSBFuturesPerExpiry);
   const optionLegs = useSelector(getSBOptionLegs);
@@ -26,7 +26,7 @@ const PNLVisualizer = () => {
     return getActiveOptionLegs(optionLegs);
   }, [optionLegs]);
 
-  const targetDateTimeISOString = useSelector(getSBTargetDateTime);
+  const targetDateTimeISOString = useSelector(getSBTargetDateTime).value;
 
   const builderQueryParams = useMemo(() => ({ 
     underlyingPrice, targetUnderlyingPrice, targetDateTimeISOString, atmIVsPerExpiry, 

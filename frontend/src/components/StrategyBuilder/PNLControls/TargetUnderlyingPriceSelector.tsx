@@ -19,6 +19,7 @@ const TargetUnderlyingPriceSelector = () => {
   const minTargetUnderlyingPrice = Math.round((underlyingPrice * 0.9));
   const maxTargetUnderlyingPrice = Math.round((underlyingPrice * 1.1));
   const step = Math.ceil((underlyingPrice * 0.005));
+  const resetAutoUpdateDisabled = targetUnderlyingPrice === underlyingPrice;
 
   const handleReset = () => {
     setTargetUnderlyingPrice(underlyingPrice);
@@ -26,7 +27,10 @@ const TargetUnderlyingPriceSelector = () => {
     timerRef.current = setTimeout(() => {
       
       if (typeof underlyingPrice !== "number") return;
-      dispatch(setSBTargetUnderlyingPrice(underlyingPrice));
+      dispatch(setSBTargetUnderlyingPrice({
+        value: underlyingPrice,
+        autoUpdate: true,
+      }));
 
     }, 500);
   };
@@ -51,7 +55,10 @@ const TargetUnderlyingPriceSelector = () => {
     timerRef.current = setTimeout(() => {
       
       if (typeof targetUnderlyingPrice !== "number") return;
-      dispatch(setSBTargetUnderlyingPrice(targetUnderlyingPrice));
+      dispatch(setSBTargetUnderlyingPrice({
+        value: targetUnderlyingPrice,
+        autoUpdate: false,
+      }));
 
     }, 500);
     return () => {
@@ -65,10 +72,11 @@ const TargetUnderlyingPriceSelector = () => {
         <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "start" }}>
           <Typography variant="body2">Target Underlying Price</Typography>
           <ButtonBase 
-            sx={{ color: "primary.main", fontSize: 14 }}
+            sx={{ color: resetAutoUpdateDisabled ? "text.disabled" : "primary.main", fontSize: 14 }}
+            disabled={resetAutoUpdateDisabled}
             onClick={handleReset}
           >
-            Reset
+            Reset & Auto Update
           </ButtonBase>
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-end", flex: 1 }}>

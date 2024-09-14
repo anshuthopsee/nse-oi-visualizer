@@ -3,7 +3,7 @@ import { type RootState } from "../../store";
 import { type Identifier as Underlying } from "../../identifiers";
 import { modifyOptionLegs, getTargetDateTime, getActiveOptionLegs, getMaxTargetDateTime } from "../../utils";
 import { type StrikeDistancesFromATM, type Expiry, type StrikeRange, type OptionLeg,
-  type ATMIVsPerExpiry, type FuturesPerExpiry, type BuilderData } from "./types";
+  type ATMIVsPerExpiry, type FuturesPerExpiry, type BuilderData, type TargetUnderlyingPrice, type TargetDateTime } from "./types";
 
 export type RequestStatus = "idle" | "loading" | "succeeded" | "failed";
 
@@ -25,8 +25,8 @@ export type OptionLegPayload = {
 export type StrategyBuilder = {
   expiry: string | null;
   underlyingPrice: number | null;
-  targetUnderlyingPrice: number | null;
-  targetDateTimeISOString: string;
+  targetUnderlyingPrice: TargetUnderlyingPrice;
+  targetDateTimeISOString: TargetDateTime;
   atmIVsPerExpiry: ATMIVsPerExpiry | null;
   futuresPerExpiry: FuturesPerExpiry | null;
   optionLegs: OptionLeg[];
@@ -54,8 +54,14 @@ const initialState: SelectedState = {
   strategyBuilder: {
     expiry: null,
     underlyingPrice: null,
-    targetUnderlyingPrice: null,
-    targetDateTimeISOString: getTargetDateTime().toISOString(),
+    targetUnderlyingPrice: {
+      value: null,
+      autoUpdate: true,
+    },
+    targetDateTimeISOString: {
+      value: getTargetDateTime().toISOString(),
+      autoUpdate: true,
+    },
     atmIVsPerExpiry: null,
     futuresPerExpiry: null,
     optionLegs: [],
@@ -69,9 +75,6 @@ const selectSlice = createSlice({
   reducers: {
     setUnderlying: (state, action: PayloadAction<Underlying>) => {
       state.underlying = action.payload;
-      // WHEN UNDERLYING CHANGES, RESET STRATEGY BUILDER,
-      // MAY NEED TO USE MIDDLEWARE TO DO THIS
-      // CHECK GOOGLE TO SEE REDUXTK DETECT CHANGE IN STATE
     },
     setExpiries: (state, action: PayloadAction<Expiry[]>) => {
       state.expiries = action.payload;
@@ -98,10 +101,10 @@ const selectSlice = createSlice({
     setSBUnderlyingPrice: (state, action: PayloadAction<number>) => {
       state.strategyBuilder.underlyingPrice = action.payload;
     },
-    setSBTargetDateTime: (state, action: PayloadAction<string>) => {
+    setSBTargetDateTime: (state, action: PayloadAction<TargetDateTime>) => {
       state.strategyBuilder.targetDateTimeISOString = action.payload;
     },
-    setSBTargetUnderlyingPrice: (state, action: PayloadAction<number>) => {
+    setSBTargetUnderlyingPrice: (state, action: PayloadAction<TargetUnderlyingPrice>) => {
       state.strategyBuilder.targetUnderlyingPrice = action.payload;
     },
     setSBATMIVsPerExpiry: (state, action: PayloadAction<ATMIVsPerExpiry>) => {
@@ -138,9 +141,12 @@ const selectSlice = createSlice({
       state.strategyBuilder.optionLegs = updatedOptionLegs;
       const activeOptionLegs = getActiveOptionLegs(updatedOptionLegs);
       const maxTargetDateTime = getMaxTargetDateTime(activeOptionLegs);
-      const targetDateTime = new Date(state.strategyBuilder.targetDateTimeISOString);
+      const targetDateTime = new Date(state.strategyBuilder.targetDateTimeISOString.value);
       if (maxTargetDateTime && targetDateTime.getTime() > maxTargetDateTime.getTime()) {
-        state.strategyBuilder.targetDateTimeISOString = maxTargetDateTime.toISOString();
+        state.strategyBuilder.targetDateTimeISOString = {
+          ...state.strategyBuilder.targetDateTimeISOString,
+          value: maxTargetDateTime.toISOString()
+        };
       };
     },
     setSBProjectedFuturePrices: (state, action: PayloadAction<BuilderData["projectedFuturesPrices"]>) => {

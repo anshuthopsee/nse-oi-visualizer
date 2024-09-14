@@ -143,4 +143,14 @@ export type OptionLeg = {
   iv: number | null;
 };
 
+export type TargetDateTime = {
+  value: string;
+  autoUpdate: boolean;
+};
+
+export type TargetUnderlyingPrice = {
+  value: number | null;
+  autoUpdate: boolean;
+};
+
 export type ActiveOptionLeg = Omit<OptionLeg, "active">;
