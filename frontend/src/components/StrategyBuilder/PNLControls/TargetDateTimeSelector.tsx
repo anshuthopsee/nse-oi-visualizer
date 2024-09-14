@@ -49,7 +49,7 @@ const TargetDateTimeSelector = () => {
           open={pickerOpen}
           ampm={false}
           reduceAnimations
-          timeSteps={{ hours: 1, minutes: 15 }}
+          timeSteps={{ hours: 1, minutes: 3 }}
           minTime={minTargetDateTime}
           maxTime={maxTargetDateTime}
           minDate={minTargetDateTime}

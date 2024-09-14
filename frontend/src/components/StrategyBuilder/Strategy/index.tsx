@@ -2,11 +2,12 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import useDeepMemo from "../../../hooks/useDeepMemo";
 import { getUnderlying, setNextUpdateAt, setSBOptionLegs, getSBOptionLegs, getSBExpiry, setSBExpiry, 
-  setSBATMIVsPerExpiry, setSBFuturesPerExpiry, setSBUnderlyingPrice, setSBTargetUnderlyingPrice
+  setSBATMIVsPerExpiry, setSBFuturesPerExpiry, setSBUnderlyingPrice, setSBTargetUnderlyingPrice,
+  setSBTargetDateTime
 } from "../../../features/selected/selectedSlice";
 import { useOpenInterestQuery, openInterestApi } from "../../../app/services/openInterest";
 import { type DataItem } from "../../../features/selected/types";
-import { getNearestStrikePrice, getNextTime } from "../../../utils";
+import { getNearestStrikePrice, getNextTime, getTargetDateTime } from "../../../utils";
 import { Box, Typography, Button, Drawer } from "@mui/material";
 import OptionLeg, { type Leg } from "./OptionLeg";
 import AddEditLegs from "../AddEditLegs";
@@ -123,8 +124,8 @@ const Strategy = () => {
       dispatch(setSBTargetUnderlyingPrice(underlyingValue));
       dispatch(setSBATMIVsPerExpiry(atmIVsPerExpiry));
       dispatch(setSBFuturesPerExpiry(futuresPerExpiry));
+      dispatch(setSBTargetDateTime(getTargetDateTime().toISOString()));
     };
-
   }, [data]);
 
   useEffect(() => {
