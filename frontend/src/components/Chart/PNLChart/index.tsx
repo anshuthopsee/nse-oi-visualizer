@@ -145,7 +145,7 @@ const PNLChart = ({ payoffsAtTarget, payoffsAtExpiry, underlyingPrice, targetUnd
 
   return (
     <div ref={chartContainerRef} style={{ width: "100%", height: "100%", display: "flex", position: "relative" }}>
-      {isFetching && <LoadingOverlay isError={isError} />}
+      {(isFetching || isError) && <LoadingOverlay isError={isError} errorMessage="Failed to fetch payoff. Try again." />}
       <svg width={width} height={height}>
         <g transform={`translate(${[
           marginLeft,

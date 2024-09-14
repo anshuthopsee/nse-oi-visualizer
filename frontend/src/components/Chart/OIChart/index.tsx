@@ -204,7 +204,7 @@ const OIChart = ({ data, underlyingPrice, type, isFetching, isError }: OIChartPr
 
   return (
     <div ref={chartContainerRef} style={{ width: "100%", height: "100%", display: "flex", position: "relative" }}>
-      {isFetching && <LoadingOverlay isError={isError} />}
+      {(isFetching || isError) && <LoadingOverlay isError={isError} />}
       <svg width={width} height={height}>
         <g transform={`translate(${[
           marginLeft,
