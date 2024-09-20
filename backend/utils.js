@@ -75,7 +75,6 @@ const getFilteredExpiries = (params) => {
   };
 };
 
-
 export const getNearestStrikePrice = (strikePrices, underlyingValue) => {
   const nearestStrikePrice = strikePrices.reduce((prev, curr) => {
     return Math.abs(curr - underlyingValue) < Math.abs(prev - underlyingValue) ? curr : prev;
@@ -83,8 +82,8 @@ export const getNearestStrikePrice = (strikePrices, underlyingValue) => {
   return nearestStrikePrice;
 };
 
-export const getIST = () => {
-  const currentTime = new Date();
+export const getIST = (date = new Date()) => {
+  const currentTime = date;
   const currentOffset = currentTime.getTimezoneOffset();
   const ISTOffset = 330;   // IST offset UTC +5:30 
   const ISTTime = new Date(currentTime.getTime() + (ISTOffset + currentOffset) * 60000);
@@ -298,7 +297,7 @@ export const getTargetDateFuturesPrices = (
     return projectedFuturesPrices;
   };
 
-  const targetDateTime = new Date(targetDateTimeISOString);
+  const targetDateTime = getIST(new Date(targetDateTimeISOString));
   const sortedOptionLegs = optionLegs.sort((a, b) => {
     return getDaysToExpiry(a.expiry) - getDaysToExpiry(b.expiry);
   });
@@ -457,7 +456,7 @@ export const getPayoffData = (builderData) => {
     targetDateTimeISOString
   );
 
-  const targetDateTime = new Date(targetDateTimeISOString);
+  const targetDateTime = getIST(new Date(targetDateTimeISOString));
   const sortedOptionLegs = optionLegs.sort((a, b) => {
     return getDaysToExpiry(a.expiry) - getDaysToExpiry(b.expiry);
   });

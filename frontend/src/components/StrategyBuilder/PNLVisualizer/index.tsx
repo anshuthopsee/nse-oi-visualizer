@@ -5,7 +5,7 @@ import { getSBUnderlyingPrice, getSBTargetUnderlyingPrice, getSBTargetDateTime, 
   getSBFuturesPerExpiry, getSBATMIVsPerExpiry, getSBOptionLegs, setSBProjectedFuturePrices,
 } from "../../../features/selected/selectedSlice";
 import { LOTSIZES } from "../../../identifiers";
-import { getUnderlyingType, getActiveOptionLegs } from "../../../utils";
+import { getUnderlyingType, getActiveOptionLegs, getUTCFromIST } from "../../../utils";
 import PNLChart from "../../Chart/PNLChart";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -26,7 +26,9 @@ const PNLVisualizer = () => {
     return getActiveOptionLegs(optionLegs);
   }, [optionLegs]);
 
-  const targetDateTimeISOString = useSelector(getSBTargetDateTime).value;
+  const targetDateTimeISOString = getUTCFromIST(
+    new Date(useSelector(getSBTargetDateTime).value)
+  );
 
   const builderQueryParams = useMemo(() => ({ 
     underlyingPrice, targetUnderlyingPrice, targetDateTimeISOString, atmIVsPerExpiry, 

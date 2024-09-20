@@ -15,8 +15,9 @@ const TargetDateTimeSelector = () => {
   const activeOptionLegs = useMemo(() => {
     return getActiveOptionLegs(optionLegs) ;   
   }, [optionLegs]);
-  const minTargetDateTime = getMinTargetDateTime();
+
   const maxTargetDateTime = getMaxTargetDateTime(activeOptionLegs);
+  const minTargetDateTime = getMinTargetDateTime(maxTargetDateTime);
   const targetDateTime = new Date(useSelector(getSBTargetDateTime).value);
   const disabled = !activeOptionLegs || activeOptionLegs.length === 0;
   const resetAutoUpdateDisabled = targetDateTime.getTime() === getTargetDateTime().getTime();
@@ -24,7 +25,6 @@ const TargetDateTimeSelector = () => {
 
   const handleDateChange = (date: Date | null) => {
     if (date) {
-
       if (date < minTargetDateTime) {
         date = minTargetDateTime;
       } else if (maxTargetDateTime && date > maxTargetDateTime) {

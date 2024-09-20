@@ -287,6 +287,13 @@ export const getIST = () => {
   return ISTTime;
 };
 
+export const getUTCFromIST = (date: Date) => {
+  const currentOffset = date.getTimezoneOffset();
+  const ISTOffset = 330;   // IST offset UTC +5:30 
+  const UTCDate = new Date(date.getTime() - (ISTOffset + currentOffset) * 60000);
+  return UTCDate.toISOString();
+};
+
 export const getExpiryDateTime = (expiryDate: string) => {
   const expiryDateTime = new Date(expiryDate);
   expiryDateTime.setHours(15, 30, 0, 0);
@@ -323,9 +330,13 @@ export const getUnderlyingType = (underlying: Underlying) => {
   || underlying === "FINNIFTY" || underlying === "MIDCPNIFTY";
 };
 
-export const getMinTargetDateTime = () => {
+export const getMinTargetDateTime = (maxTargetDateTime: Date | undefined) => {
   const dateTime = getIST();
   dateTime.setHours(9, 15, 0, 0);
+
+  if (maxTargetDateTime && dateTime > maxTargetDateTime) {
+    return maxTargetDateTime;
+  };
   return dateTime;
 };
 
