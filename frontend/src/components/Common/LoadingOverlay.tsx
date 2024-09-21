@@ -8,9 +8,10 @@ type LoadingOverlayProps = {
   errorMessage?: string;
   type?: "page" | "component";
   isError: boolean;
+  opaque?: boolean;
 };
 
-const LoadingOverlay = ({ message, type = "component", isError, errorMessage }: LoadingOverlayProps) => {
+const LoadingOverlay = ({ message, type = "component", isError, errorMessage, opaque = false }: LoadingOverlayProps) => {
 
   const defaultLoadingMessage = "Fetching data...";
   const defaultErrorMessage = "Failed to fetch data. Refresh the page.";
@@ -59,7 +60,7 @@ const LoadingOverlay = ({ message, type = "component", isError, errorMessage }: 
   
   return (
     <div style={{ position: "absolute", height: "100%", width: "100%", zIndex: 10, display: "flex", justifyContent: "center", alignItems: "center", backdropFilter: "blur(3px)" }}>
-      <Box sx={{ position: "relative", height: "100%", width: "100%", backgroundColor: "background.paper", opacity: 0.7 }}/>
+      <Box sx={{ position: "relative", height: "100%", width: "100%", backgroundColor: "background.paper", opacity: opaque ? 1 : 0.7 }}/>
       <Box sx={{ position: "absolute", height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
         {content}
       </Box>
