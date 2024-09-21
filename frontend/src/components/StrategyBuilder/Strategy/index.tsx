@@ -5,7 +5,7 @@ import { getUnderlying, setNextUpdateAt, setSBOptionLegs, getSBOptionLegs, getSB
   setSBATMIVsPerExpiry, setSBFuturesPerExpiry, setSBUnderlyingPrice, getSBTargetDateTime, getSBTargetUnderlyingPrice,
   setSBTargetUnderlyingPrice, setSBTargetDateTime
 } from "../../../features/selected/selectedSlice";
-import { useOpenInterestQuery, openInterestApi } from "../../../app/services/openInterest";
+import { useOpenInterestQuery } from "../../../app/services/openInterest";
 import { type DataItem } from "../../../features/selected/types";
 import { getNearestStrikePrice, getNextTime, getTargetDateTime } from "../../../utils";
 import { Box, Typography, Button, Drawer } from "@mui/material";
@@ -61,23 +61,6 @@ const Strategy = () => {
   const handleAddEditBtnClick = () => {
     setDrawerOpen((prevState) => !prevState);
   };
-
-  useEffect(() => {
-    const IntervalWorker: Worker = new Worker(new URL("../../../worker/IntervalWorker.ts", import.meta.url));
-    IntervalWorker.postMessage({ action: "start" });
-    IntervalWorker.onmessage = (e: MessageEvent) => {
-      if (e.data === "get-oi") {
-        console.log("getting oi data");
-        dispatch(openInterestApi.util.invalidateTags(["OpenInterest"]));
-      };
-    };
-
-    return () => {
-      console.log("terminating worker");
-      IntervalWorker.terminate();
-    };
-
-  }, [underlying]);
 
   useEffect(() => {
     if (!isFetching && !isError) {
