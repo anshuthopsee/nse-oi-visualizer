@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getSBUnderlyingPrice, setSBTargetUnderlyingPrice } from '../../../features/selected/selectedSlice';
+import { getSBUnderlyingPrice, getSBTargetUnderlyingPrice, setSBTargetUnderlyingPrice } from '../../../features/selected/selectedSlice';
 import Slider from '@mui/material/Slider';
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -15,18 +15,21 @@ const TargetUnderlyingPriceSelector = () => {
   const dispatch = useDispatch();
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const underlyingPrice = useSelector(getSBUnderlyingPrice) || 0;
+  const targetUnderlyingPriceAutoUpdate = useSelector(getSBTargetUnderlyingPrice).autoUpdate;
+  console.log("targetUnderlyingPriceAutoUpdate", targetUnderlyingPriceAutoUpdate);
   const [targetUnderlyingPrice, setTargetUnderlyingPrice] = useState<number>(underlyingPrice);
   const minTargetUnderlyingPrice = Math.round((underlyingPrice * 0.9));
   const maxTargetUnderlyingPrice = Math.round((underlyingPrice * 1.1));
   const step = Math.ceil((underlyingPrice * 0.005));
-  const resetAutoUpdateDisabled = targetUnderlyingPrice === underlyingPrice;
+  const resetAutoUpdateDisabled = targetUnderlyingPriceAutoUpdate || targetUnderlyingPrice === underlyingPrice;
 
   const handleReset = () => {
     setTargetUnderlyingPrice(underlyingPrice);
+    console.log("resetting");
     timerRef.current && clearTimeout(timerRef.current);
+    if (typeof underlyingPrice !== "number") return;
     timerRef.current = setTimeout(() => {
       
-      if (typeof underlyingPrice !== "number") return;
       dispatch(setSBTargetUnderlyingPrice({
         value: underlyingPrice,
         autoUpdate: true,
@@ -47,14 +50,15 @@ const TargetUnderlyingPriceSelector = () => {
   };
 
   useEffect(() => {
+    if (!resetAutoUpdateDisabled) return;
     setTargetUnderlyingPrice(underlyingPrice);
   }, [underlyingPrice]);
 
   useEffect(() => {
     timerRef.current && clearTimeout(timerRef.current);
+    if (typeof targetUnderlyingPrice !== "number") return;
+
     timerRef.current = setTimeout(() => {
-      
-      if (typeof targetUnderlyingPrice !== "number") return;
       dispatch(setSBTargetUnderlyingPrice({
         value: targetUnderlyingPrice,
         autoUpdate: false,
