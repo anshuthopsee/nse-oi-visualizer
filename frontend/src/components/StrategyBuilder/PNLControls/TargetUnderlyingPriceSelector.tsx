@@ -14,18 +14,16 @@ const TargetUnderlyingPriceSelector = () => {
   
   const dispatch = useDispatch();
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
-  const underlyingPrice = useSelector(getSBUnderlyingPrice) || 0;
+  const underlyingPrice = useSelector(getSBUnderlyingPrice) || null;
   const targetUnderlyingPriceAutoUpdate = useSelector(getSBTargetUnderlyingPrice).autoUpdate;
-  console.log("targetUnderlyingPriceAutoUpdate", targetUnderlyingPriceAutoUpdate);
-  const [targetUnderlyingPrice, setTargetUnderlyingPrice] = useState<number>(underlyingPrice);
-  const minTargetUnderlyingPrice = Math.round((underlyingPrice * 0.9));
-  const maxTargetUnderlyingPrice = Math.round((underlyingPrice * 1.1));
-  const step = Math.ceil((underlyingPrice * 0.005));
+  const [targetUnderlyingPrice, setTargetUnderlyingPrice] = useState<number | null>(underlyingPrice);
+  const minTargetUnderlyingPrice = underlyingPrice ? Math.round((underlyingPrice * 0.9)) : 0;
+  const maxTargetUnderlyingPrice = underlyingPrice ? Math.round((underlyingPrice * 1.1)) : 0;
+  const step = underlyingPrice ? Math.ceil((underlyingPrice * 0.005)) : 0;
   const resetAutoUpdateDisabled = targetUnderlyingPriceAutoUpdate || targetUnderlyingPrice === underlyingPrice;
 
   const handleReset = () => {
     setTargetUnderlyingPrice(underlyingPrice);
-    console.log("resetting");
     timerRef.current && clearTimeout(timerRef.current);
     if (typeof underlyingPrice !== "number") return;
     timerRef.current = setTimeout(() => {
@@ -52,12 +50,12 @@ const TargetUnderlyingPriceSelector = () => {
   useEffect(() => {
     if (!resetAutoUpdateDisabled) return;
     setTargetUnderlyingPrice(underlyingPrice);
-  }, [underlyingPrice]);
+  }, [underlyingPrice, resetAutoUpdateDisabled]);
 
   useEffect(() => {
     timerRef.current && clearTimeout(timerRef.current);
     if (typeof targetUnderlyingPrice !== "number") return;
-
+    
     timerRef.current = setTimeout(() => {
       dispatch(setSBTargetUnderlyingPrice({
         value: targetUnderlyingPrice,
@@ -92,8 +90,11 @@ const TargetUnderlyingPriceSelector = () => {
               <IconButton
                 size="small"
                 sx={{ height: "40px", width: "40px", color: "primary" }}
-                onClick={() => setTargetUnderlyingPrice(targetUnderlyingPrice - step)}
-                disabled={targetUnderlyingPrice <= minTargetUnderlyingPrice}
+                onClick={() => {
+                  if (typeof targetUnderlyingPrice !== "number" ) return;
+                  setTargetUnderlyingPrice(targetUnderlyingPrice - step)
+                }}
+                disabled={(targetUnderlyingPrice || 0) <= minTargetUnderlyingPrice}
               >
                 <RemoveIcon fontSize="small" />
               </IconButton>
@@ -118,7 +119,7 @@ const TargetUnderlyingPriceSelector = () => {
                   MozAppearance: "textfield",
                 },
               }}
-              value={targetUnderlyingPrice}
+              value={targetUnderlyingPrice || ""}
               onChange={handleInputChange}
               inputProps={{ 
                 min: minTargetUnderlyingPrice, 
@@ -138,8 +139,11 @@ const TargetUnderlyingPriceSelector = () => {
               <IconButton
                 size="small"
                 sx={{ height: "40px", width: "40px", color: "primary" }}
-                onClick={() => setTargetUnderlyingPrice(targetUnderlyingPrice + step)}
-                disabled={targetUnderlyingPrice >= maxTargetUnderlyingPrice}
+                onClick={() => {
+                  if (typeof targetUnderlyingPrice !== "number" ) return;
+                  setTargetUnderlyingPrice(targetUnderlyingPrice + step)
+                }}
+                disabled={(targetUnderlyingPrice || 0) >= maxTargetUnderlyingPrice}
               > 
                 <AddIcon fontSize="small" />
               </IconButton>
@@ -153,7 +157,7 @@ const TargetUnderlyingPriceSelector = () => {
           "& .MuiSlider-rail": { height: 10, borderRadius: 3, opacity: 0.9 },
           "& .MuiSlider-track": { height: 10, borderRadius: 3,  },
         }}
-        value={targetUnderlyingPrice}
+        value={targetUnderlyingPrice || 0}
         valueLabelFormat={(value) => value.toFixed(2)}
         track={false}
         step={step}
