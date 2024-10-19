@@ -8,9 +8,6 @@ import Info from "./Info";
 const PNLControls = () => {
   const projectedFuturePrices = useSelector(getSBProjectedFuturePrices);
 
-  // WHEN UNERLYING IS CHANGED, EVERYTHING SHOULD BE SET TO NULL, DO IT IN THE 
-  // SET UNDERLYING REDUCER
-
   return (
     <Box sx={{ display: "flex", flexDirection: "column", width: "100%", height: "fit-content", }}>
       <Box sx={{borderBottom: 1, borderBottomColor: "divider" }}>

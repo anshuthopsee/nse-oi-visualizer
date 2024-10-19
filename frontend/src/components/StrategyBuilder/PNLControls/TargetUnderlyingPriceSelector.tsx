@@ -15,19 +15,19 @@ const TargetUnderlyingPriceSelector = () => {
   const dispatch = useDispatch();
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const underlyingPrice = useSelector(getSBUnderlyingPrice) || null;
-  const targetUnderlyingPriceAutoUpdate = useSelector(getSBTargetUnderlyingPrice).autoUpdate;
-  const [targetUnderlyingPrice, setTargetUnderlyingPrice] = useState<number | null>(underlyingPrice);
+  const sBTargetUnderlyingPrice = useSelector(getSBTargetUnderlyingPrice);
+  const [targetUnderlyingPrice, setTargetUnderlyingPrice] = useState<number | null>(sBTargetUnderlyingPrice.value);
   const minTargetUnderlyingPrice = underlyingPrice ? Math.round((underlyingPrice * 0.9)) : 0;
   const maxTargetUnderlyingPrice = underlyingPrice ? Math.round((underlyingPrice * 1.1)) : 0;
   const step = underlyingPrice ? Math.ceil((underlyingPrice * 0.005)) : 0;
-  const resetAutoUpdateDisabled = targetUnderlyingPriceAutoUpdate || targetUnderlyingPrice === underlyingPrice;
+  const resetAutoUpdateDisabled = sBTargetUnderlyingPrice.autoUpdate || targetUnderlyingPrice === underlyingPrice;
 
   const handleReset = () => {
     setTargetUnderlyingPrice(underlyingPrice);
     timerRef.current && clearTimeout(timerRef.current);
     if (typeof underlyingPrice !== "number") return;
+    
     timerRef.current = setTimeout(() => {
-      
       dispatch(setSBTargetUnderlyingPrice({
         value: underlyingPrice,
         autoUpdate: true,
@@ -59,7 +59,7 @@ const TargetUnderlyingPriceSelector = () => {
     timerRef.current = setTimeout(() => {
       dispatch(setSBTargetUnderlyingPrice({
         value: targetUnderlyingPrice,
-        autoUpdate: false,
+        autoUpdate: targetUnderlyingPrice === underlyingPrice,
       }));
 
     }, 500);
