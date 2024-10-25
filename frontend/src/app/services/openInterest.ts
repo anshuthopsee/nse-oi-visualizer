@@ -45,7 +45,7 @@ export const openInterestApi = createApi({
     builder: builder.query<BuilderData, BuilderRequestParams>({
       query: (strategyBuilderData) => {
         
-        const url = (import.meta.env.MODE === "development" ? "/api/" : import.meta.env.VITE_API_BASE_URL) + "builder"
+        const url = (import.meta.env.MODE === "development" ? "/api" : import.meta.env.VITE_API_BASE_URL) + "/builder"
         
         return {
           url: url,
