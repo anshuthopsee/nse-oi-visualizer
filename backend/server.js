@@ -55,7 +55,7 @@ const getCookies = async () => {
   };
 };
 
-app.get('/', async (req, res) => {
+app.get('/open-interest', async (req, res) => {
   const now = new Date();
   const time = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
   console.log(`Request received at ${time}`);
