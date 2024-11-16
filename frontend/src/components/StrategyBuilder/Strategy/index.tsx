@@ -29,6 +29,28 @@ const formatData = (data: DataItem[]) => {
   });
 };
 
+type FormattedDataItem = ReturnType<typeof formatData>[number];
+
+export type PriceAndIV= Map<string, Map<number, FormattedDataItem>> | null;
+
+export const getOptionPriceAndIV = (
+  priceAndIV: NonNullable<PriceAndIV>,
+  type: "CE" | "PE",
+  expiry: string,
+  strike: number
+): [number, number | null] => {
+  if (priceAndIV.has(expiry)) {
+    const priceMap = priceAndIV.get(expiry);
+    if (priceMap && priceMap.has(strike)) {
+      const row = priceMap.get(strike);
+      const price = type === "CE" ? row?.callPrice || 0 : row?.putPrice || 0;
+      const iv = row?.iv || null;
+      return [price, iv];
+    }
+  }
+  return [0, null];
+};
+
 const Strategy = () => {
   const dispatch = useDispatch();
   const underlying = useSelector(getUnderlying);
@@ -42,6 +64,23 @@ const Strategy = () => {
   const { data, isFetching, isError } = useOpenInterestQuery({ underlying: underlying });
   const filteredExpiries = useDeepMemo(data?.filteredExpiries);
   const rows = (data && expiry) ? formatData(data.grouped[expiry]?.data || []) : [];
+
+  const priceAndIV = useMemo(() => {
+    const map = new Map<string, Map<number, FormattedDataItem>>();
+    if (!filteredExpiries || !data) return null;
+
+    filteredExpiries.forEach((expiry) => {
+      const strikeMap = new Map<number, FormattedDataItem>();
+      const rows = formatData(data.grouped[expiry]?.data) || [];
+      rows.forEach((row) => {
+        strikeMap.set(row.strike, row);
+      });
+      map.set(expiry, strikeMap);
+    });
+
+    return map;
+
+  }, [data, filteredExpiries]);
 
   const strikePrices = useMemo(() => {
     return rows.map((row) => row.strike);
@@ -73,20 +112,16 @@ const Strategy = () => {
   useEffect(() => {
     if (data && memoizedOptionLegs) {
       const updatedOptionLegs = memoizedOptionLegs.map((optionLeg) => {
-        const expiryData = data.grouped[optionLeg.expiry].data;
-        for (const item of expiryData) {
-          if (item.strikePrice === optionLeg.strike) {
-            const contractData = item[optionLeg.type];
-            if (contractData) {
-              return {
-                ...optionLeg, 
-                price: contractData.lastPrice,
-                iv: item.iv
-              };
-            };
-          };
+        if (priceAndIV === null) return optionLeg;
+        const [price, iv] = getOptionPriceAndIV(
+          priceAndIV, optionLeg.type, optionLeg.expiry, optionLeg.strike
+        );
+
+        return {
+          ...optionLeg, 
+          price: price,
+          iv: iv
         };
-        return optionLeg;
       });
       dispatch(setSBOptionLegs({
         type: "set",
@@ -94,7 +129,7 @@ const Strategy = () => {
       }));
     };
 
-  }, [data, memoizedOptionLegs]);
+  }, [data, memoizedOptionLegs, priceAndIV]);
 
   useEffect(() => {
     if (data) {
@@ -164,6 +199,7 @@ const Strategy = () => {
 
           return (
             <OptionLeg
+              priceAndIV={priceAndIV}
               showHeader={i === 0}
               active={optionLeg.active}
               key={key}

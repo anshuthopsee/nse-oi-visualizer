@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import { type TransformedData, type DataItem } from "../../../features/selected/types";
+import { type PriceAndIV } from "./index";
+import { getOptionPriceAndIV } from "./index";
 import Checkbox from "@mui/material/Checkbox";
 import ActionButton from "./ActionButton";
 import ExpirySelect from "./ExpirySelect";
@@ -14,6 +16,7 @@ const getStrikePrices = (dataItems: DataItem[]) => {
   return dataItems.map((item) => item.strikePrice);
 };
 
+
 export type Leg = {
   active: boolean;
   action: "B" | "S";
@@ -26,6 +29,7 @@ export type Leg = {
 }
 
 type OptionLegProps = {
+  priceAndIV: PriceAndIV;
   showHeader?: boolean;
   data: TransformedData;
   expiries: string[];
@@ -34,7 +38,7 @@ type OptionLegProps = {
   onDelete: (legIndexPos: number) => void;
 } & Leg;
 
-const OptionLeg = ({ showHeader = false, active, data, action, expiries, 
+const OptionLeg = ({ priceAndIV, showHeader = false, active, data, action, expiries, 
   expiry, strike, type, lots, price, iv, onChange, onDelete, legIndexPos }: OptionLegProps) => {
 
   const strikes = getStrikePrices(data.grouped[expiry].data);
@@ -51,15 +55,27 @@ const OptionLeg = ({ showHeader = false, active, data, action, expiries,
     };
   
     const handleExpiryChange = (expiry: string) => {
-      onChange({ ...leg, expiry }, legIndexPos);
+
+      if (priceAndIV === null) return;
+      const [price, iv] = getOptionPriceAndIV(priceAndIV, type, expiry, strike);
+
+      onChange({ ...leg, expiry, price, iv }, legIndexPos);
     };
   
     const handleStrikeChange = (strike: number) => {
-      onChange({ ...leg, strike }, legIndexPos);
+
+      if (priceAndIV === null) return;
+      const [price, iv] = getOptionPriceAndIV(priceAndIV, type, expiry, strike);
+
+      onChange({ ...leg, strike, price, iv }, legIndexPos);
     };
   
     const handleTypeClick = (type: "CE" | "PE") => {
-      onChange({ ...leg, type }, legIndexPos);
+
+      if (priceAndIV === null) return;
+      const [price, iv] = getOptionPriceAndIV(priceAndIV, type, expiry, strike);
+
+      onChange({ ...leg, type, price, iv }, legIndexPos);
     };
   
     const handleLotsChange = (lots: number) => {
